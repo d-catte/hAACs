@@ -2,5 +2,12 @@
 name = "haacs"
 version = "0.0.1"
 edition = "2021"
+license = "MIT"
+build = "build.rs"
 
 [dependencies]
+slint = "1.10.0"
+tts = "0.26.3"
+
+[build-dependencies]
+slint-build = "1.10.0"
