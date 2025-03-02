@@ -1,6 +1,6 @@
+use ::tts::Tts;
 use std::thread;
 use std::time::Duration;
-use ::tts::Tts;
 
 slint::include_modules!();
 fn main() {
@@ -14,8 +14,8 @@ fn main() {
         tts.set_voice(&voice).unwrap();
         tts.speak(voice.name(), false).unwrap();
         thread::sleep(Duration::from_secs(3));
-    };
+    }
 
     let keyboard = AdaptiveKeyboard::new().unwrap();
-    &keyboard.run().unwrap();
+    let _ = &keyboard.run().unwrap();
 }
