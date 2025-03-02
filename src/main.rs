@@ -1,11 +1,8 @@
 use std::thread;
 use std::time::Duration;
 use ::tts::Tts;
-use slint::slint;
 
-slint!(
-);
-
+slint::include_modules!();
 fn main() {
     println!("Hello, world!");
 
@@ -18,4 +15,7 @@ fn main() {
         tts.speak(voice.name(), false).unwrap();
         thread::sleep(Duration::from_secs(3));
     };
+
+    let keyboard = AdaptiveKeyboard::new().unwrap();
+    &keyboard.run().unwrap();
 }

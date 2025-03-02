@@ -1,0 +1,421 @@
+
+import { TextEdit, ScrollView } from "std-widgets.slint";
+export component AdaptiveKeyboard inherits Window {
+    height: 300px;
+    width: 1024px;
+    title: "hAACs Runtime";
+
+
+    Rectangle {
+        border-color: #00ff04;
+        border-width: 2px;
+        height: 150px;
+        width: 150px;
+        x: 0px;
+        y: 0px;
+        SwipeGestureHandler {
+            handle-swipe-down: true;
+            handle-swipe-left: true;
+            handle-swipe-right: true;
+            handle-swipe-up: true;
+            height: 150px;
+            opacity: 1;
+            visible: true;
+            width: 150px;
+            x: 0px;
+            y: 0px;
+
+            Text {
+                text: "Q";
+                vertical-alignment: TextVerticalAlignment.top;
+                wrap: TextWrap.word-wrap;
+                x: 70px;
+                y: 5px;
+            }
+            Text {
+                text: "W";
+                x: 70px;
+                y: 70px;
+            }
+            Text {
+                text: "E";
+                x: 135px;
+                y: 70px;
+            }
+            Text {
+                text: "R";
+                x: 70px;
+                y: 125px;
+            }
+            Text {
+                text: "T";
+                x: 10px;
+                y: 70px;
+            }
+        }
+    }
+    Rectangle {
+        border-color: #00ff04;
+        border-width: 2px;
+        height: 150px;
+        width: 150px;
+        x: 0px;
+        y: 150px;
+        SwipeGestureHandler {
+            handle-swipe-down: true;
+            handle-swipe-left: true;
+            handle-swipe-right: true;
+            handle-swipe-up: true;
+            height: 150px;
+            width: 150px;
+            x: 0px;
+            y: 0px;
+            Text {
+                text: "S";
+                x: 70px;
+                y: 70px;
+            }
+            Text {
+                text: "A";
+                x: 70px;
+                y: 5px;
+            }
+            Text {
+                text: "D";
+                x: 135px;
+                y: 70px;
+            }
+            Text {
+                text: "F";
+                x: 70px;
+                y: 125px;
+            }
+            Text {
+                text: "G";
+                x: 10px;
+                y: 70px;
+            }
+        }
+    }
+
+    Rectangle {
+        border-color: #00ff04;
+        border-width: 2px;
+        height: 150px;
+        width: 150px;
+        y: 150px;
+        x: 150px;
+        SwipeGestureHandler {
+            handle-swipe-down: true;
+            handle-swipe-left: true;
+            handle-swipe-right: true;
+            handle-swipe-up: true;
+            height: 150px;
+            width: 150px;
+            Text {
+                text: "X";
+                x: 70px;
+                y: 70px;
+            }
+            Text {
+                text: "Z";
+                x: 70px;
+                y: 5px;
+            }
+
+            Text {
+                text: "C";
+                x: 10px;
+                y: 70px;
+            }
+            Text {
+                text: "Space";
+                x: 58px;
+                y: 125px;
+            }
+            Text {
+                text: ",";
+                x: 137px;
+                y: 67px;
+            }
+        }
+    }
+    Rectangle {
+        border-color: #00ff04;
+        border-width: 2px;
+        height: 150px;
+        width: 150px;
+        x: 874px;
+        y: 150px;
+        SwipeGestureHandler {
+            handle-swipe-down: true;
+            handle-swipe-left: true;
+            handle-swipe-right: true;
+            handle-swipe-up: true;
+            height: 150px;
+            width: 150px;
+            Text {
+                text: "J";
+                x: 70px;
+                y: 70px;
+            }
+            Text {
+                text: "H";
+                x: 70px;
+                y: 5px;
+            }
+            Text {
+                text: "K";
+                x: 135px;
+                y: 70px;
+            }
+            Text {
+                text: "L";
+                x: 10px;
+                y: 70px;
+            }
+            Text {
+                text: "M";
+                x: 70px;
+                y: 120px;
+            }
+        }
+    }
+    Rectangle {
+        border-color: #00ff04;
+        border-width: 2px;
+        height: 150px;
+        width: 150px;
+        x: 874px;
+        y: 0px;
+        SwipeGestureHandler {
+            handle-swipe-down: true;
+            handle-swipe-left: true;
+            handle-swipe-right: true;
+            handle-swipe-up: true;
+            height: 150px;
+            width: 150px;
+            Text {
+                text: "U";
+                x: 70px;
+                y: 70px;
+            }
+            Text {
+                text: "Y";
+                x: 70px;
+                y: 5px;
+            }
+            Text {
+                text: "I";
+                x: 135px;
+                y: 70px;
+            }
+            Text {
+                text: "O";
+                x: 70px;
+                y: 125px;
+            }
+            Text {
+                text: "P";
+                x: 10px;
+                y: 70px;
+            }
+        }
+    }
+    Rectangle {
+        border-color: #00ff04;
+        border-width: 2px;
+        height: 150px;
+        width: 150px;
+        x: 724px;
+        y: 150px;
+        SwipeGestureHandler {
+            handle-swipe-down: true;
+            handle-swipe-left: true;
+            handle-swipe-right: true;
+            handle-swipe-up: true;
+            height: 150px;
+            width: 150px;
+            Text {
+                text: "B";
+                x: 70px;
+                y: 70px;
+            }
+            Text {
+                text: "V";
+                x: 70px;
+                y: 10px;
+            }
+            Text {
+                text: "N";
+                x: 135px;
+                y: 70px;
+            }
+            Text {
+                text: "Delete";
+                x: 58px;
+                y: 125px;
+            }
+            Text {
+                text: ".";
+                x: 10px;
+                y: 67px;
+            }
+        }
+    }
+    Rectangle {
+        border-color: #ffbb00;
+        border-width: 2px;
+        height: 150px;
+        width: 424px;
+        x: 300px;
+        y: 150px;
+        GridLayout {
+            spacing: 20px;
+            spacing-horizontal: 20px;
+            spacing-vertical: 20px;
+            Text {
+                font-size: 20px;
+                horizontal-alignment: TextHorizontalAlignment.center;
+                text: "0";
+                vertical-alignment: TextVerticalAlignment.center;
+                col: 0;
+                row: 0;
+                TouchArea {
+                    mouse-cursor: MouseCursor.none; }
+            }
+            Text {
+                font-size: 20px;
+                horizontal-alignment: TextHorizontalAlignment.center;
+                text: "1";
+                vertical-alignment: TextVerticalAlignment.center;
+                col: 1;
+                row: 0;
+                TouchArea {
+                    mouse-cursor: MouseCursor.none; }
+            }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "2";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 2;
+                            row: 0;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "3";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 3;
+                            row: 0;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "4";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 4;
+                            row: 0;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "5";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 0;
+                            row: 1;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "6";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 1;
+                            row: 1;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "7";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 2;
+                            row: 1;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "8";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 3;
+                            row: 1;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "9";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 4;
+                            row: 1;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+        }
+    }
+    Rectangle {
+        border-color: #ff0000;
+        border-width: 2px;
+        height: 150px;
+        width: 724px;
+        x: 150px;
+        y: 0px;
+        GridLayout {
+            spacing: 20px;
+            spacing-horizontal: 20px;
+            Text {
+                font-size: 20px;
+                horizontal-alignment: TextHorizontalAlignment.center;
+                text: "Word 1";
+                vertical-alignment: TextVerticalAlignment.center;
+                col: 0;
+                row: 0;
+                TouchArea {
+                    mouse-cursor: MouseCursor.none; }
+            }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "Word 2";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 1;
+                            row: 0;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+            Text {
+                            font-size: 20px;
+                            horizontal-alignment: TextHorizontalAlignment.center;
+                            text: "Word 3";
+                            vertical-alignment: TextVerticalAlignment.center;
+                            col: 2;
+                            row: 0;
+                            TouchArea {
+                                mouse-cursor: MouseCursor.none; }
+                        }
+        }
+    }
+}
