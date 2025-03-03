@@ -1,3 +1,6 @@
+mod keyboard;
+
+use crate::keyboard::Keyboard;
 use ::tts::Tts;
 use std::thread;
 use std::time::Duration;
@@ -16,6 +19,5 @@ fn main() {
         thread::sleep(Duration::from_secs(3));
     }
 
-    let keyboard = AdaptiveKeyboard::new().unwrap();
-    let _ = &keyboard.run().unwrap();
+    let _ = Keyboard::new();
 }

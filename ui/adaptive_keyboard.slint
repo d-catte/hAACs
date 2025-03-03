@@ -1,10 +1,21 @@
+export enum SwipeDirection {
+    up,
+    down,
+    left,
+    right,
+    none
+}
 
-import { TextEdit, ScrollView } from "std-widgets.slint";
 export component AdaptiveKeyboard inherits Window {
+    in-out property<SwipeDirection> swipe_direction;
+    in property <string> word_suggestion_one: "";
+    in property <string> word_suggestion_two: "";
+    in property <string> word_suggestion_three: "";
+
     height: 300px;
     width: 1024px;
+    no-frame: false;
     title: "hAACs Runtime";
-
 
     Rectangle {
         border-color: #00ff04;
@@ -52,6 +63,21 @@ export component AdaptiveKeyboard inherits Window {
                 x: 10px;
                 y: 70px;
             }
+
+            swiped => {
+                root.handle_swipe(self.current-position.x, self.pressed-position.x, self.current-position.y, self.pressed-position.y);
+                root.send_swipe_update("Q", "R", "T", "E");
+            }
+            TouchArea {
+                height: 40px;
+                mouse-cursor: MouseCursor.pointer;
+                width: 40px;
+                x: 55px;
+                y: 55px;
+                clicked => {
+                    root.character_typed("W");
+                }
+            }
         }
     }
     Rectangle {
@@ -94,6 +120,21 @@ export component AdaptiveKeyboard inherits Window {
                 text: "G";
                 x: 10px;
                 y: 70px;
+            }
+
+            swiped => {
+                root.handle_swipe(self.current-position.x, self.pressed-position.x, self.current-position.y, self.pressed-position.y);
+                root.send_swipe_update("A", "F", "G", "D");
+            }
+            TouchArea {
+                height: 40px;
+                mouse-cursor: MouseCursor.pointer;
+                width: 40px;
+                x: 55px;
+                y: 55px;
+                clicked => {
+                    root.character_typed("S");
+                }
             }
         }
     }
@@ -138,6 +179,21 @@ export component AdaptiveKeyboard inherits Window {
                 x: 137px;
                 y: 67px;
             }
+
+            swiped => {
+                root.handle_swipe(self.current-position.x, self.pressed-position.x, self.current-position.y, self.pressed-position.y);
+                root.send_swipe_update("Z", "Space", "C", ",");
+            }
+            TouchArea {
+                height: 40px;
+                mouse-cursor: MouseCursor.pointer;
+                width: 40px;
+                x: 55px;
+                y: 55px;
+                clicked => {
+                    root.character_typed("X");
+                }
+            }
         }
     }
     Rectangle {
@@ -178,6 +234,21 @@ export component AdaptiveKeyboard inherits Window {
                 text: "M";
                 x: 70px;
                 y: 120px;
+            }
+
+            swiped => {
+                root.handle_swipe(self.current-position.x, self.pressed-position.x, self.current-position.y, self.pressed-position.y);
+                root.send_swipe_update("H", "M", "L", "K");
+            }
+            TouchArea {
+                height: 40px;
+                mouse-cursor: MouseCursor.pointer;
+                width: 40px;
+                x: 55px;
+                y: 55px;
+                clicked => {
+                    root.character_typed("J");
+                }
             }
         }
     }
@@ -220,6 +291,21 @@ export component AdaptiveKeyboard inherits Window {
                 x: 10px;
                 y: 70px;
             }
+
+            swiped => {
+                root.handle_swipe(self.current-position.x, self.pressed-position.x, self.current-position.y, self.pressed-position.y);
+                root.send_swipe_update("Y", "O", "P", "I");
+            }
+            TouchArea {
+                height: 40px;
+                mouse-cursor: MouseCursor.pointer;
+                width: 40px;
+                x: 55px;
+                y: 55px;
+                clicked => {
+                    root.character_typed("U");
+                }
+            }
         }
     }
     Rectangle {
@@ -261,6 +347,21 @@ export component AdaptiveKeyboard inherits Window {
                 x: 10px;
                 y: 67px;
             }
+
+            swiped => {
+                root.handle_swipe(self.current-position.x, self.pressed-position.x, self.current-position.y, self.pressed-position.y);
+                root.send_swipe_update("V", "Delete", ".", "N");
+            }
+            TouchArea {
+                height: 40px;
+                mouse-cursor: MouseCursor.pointer;
+                width: 40px;
+                x: 55px;
+                y: 55px;
+                clicked => {
+                    root.character_typed("B");
+                }
+            }
         }
     }
     Rectangle {
@@ -282,7 +383,11 @@ export component AdaptiveKeyboard inherits Window {
                 col: 0;
                 row: 0;
                 TouchArea {
-                    mouse-cursor: MouseCursor.none; }
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        root.character_typed("0");
+                    }
+                }
             }
             Text {
                 font-size: 20px;
@@ -292,7 +397,11 @@ export component AdaptiveKeyboard inherits Window {
                 col: 1;
                 row: 0;
                 TouchArea {
-                    mouse-cursor: MouseCursor.none; }
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        root.character_typed("1");
+                    }
+                }
             }
             Text {
                             font-size: 20px;
@@ -302,7 +411,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 2;
                             row: 0;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("2");
+                                }
+                            }
                         }
             Text {
                             font-size: 20px;
@@ -312,7 +425,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 3;
                             row: 0;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("3");
+                                }
+                            }
                         }
             Text {
                             font-size: 20px;
@@ -322,7 +439,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 4;
                             row: 0;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("4");
+                                }
+                            }
                         }
             Text {
                             font-size: 20px;
@@ -332,7 +453,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 0;
                             row: 1;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("5");
+                                }
+                            }
                         }
             Text {
                             font-size: 20px;
@@ -342,7 +467,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 1;
                             row: 1;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("6");
+                                }
+                            }
                         }
             Text {
                             font-size: 20px;
@@ -352,7 +481,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 2;
                             row: 1;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("7");
+                                }
+                            }
                         }
             Text {
                             font-size: 20px;
@@ -362,7 +495,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 3;
                             row: 1;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("8");
+                                }
+                            }
                         }
             Text {
                             font-size: 20px;
@@ -372,7 +509,11 @@ export component AdaptiveKeyboard inherits Window {
                             col: 4;
                             row: 1;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.character_typed("9");
+                                }
+                            }
                         }
         }
     }
@@ -386,36 +527,89 @@ export component AdaptiveKeyboard inherits Window {
         GridLayout {
             spacing: 20px;
             spacing-horizontal: 20px;
-            Text {
+            word_one := Text {
                 font-size: 20px;
                 horizontal-alignment: TextHorizontalAlignment.center;
-                text: "Word 1";
+                text: root.word_suggestion_one;
                 vertical-alignment: TextVerticalAlignment.center;
                 col: 0;
                 row: 0;
                 TouchArea {
-                    mouse-cursor: MouseCursor.none; }
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        root.autocomplete(word_one.text);
+                    }
+                }
             }
-            Text {
+            word_two := Text {
                             font-size: 20px;
                             horizontal-alignment: TextHorizontalAlignment.center;
-                            text: "Word 2";
+                            text: root.word_suggestion_two;
                             vertical-alignment: TextVerticalAlignment.center;
                             col: 1;
                             row: 0;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.autocomplete(word_two.text);
+                                }
+                            }
                         }
-            Text {
+            word_three := Text {
                             font-size: 20px;
                             horizontal-alignment: TextHorizontalAlignment.center;
-                            text: "Word 3";
+                            text: root.word_suggestion_three;
                             vertical-alignment: TextVerticalAlignment.center;
                             col: 2;
                             row: 0;
                             TouchArea {
-                                mouse-cursor: MouseCursor.none; }
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => {
+                                    root.autocomplete(word_three.text);
+                                }
+                            }
                         }
+        }
+    }
+
+    // Called when a character button is pressed
+    pure callback character_typed(string);
+
+    // Called when a suggestion word button is pressed
+    pure callback autocomplete(string);
+
+    // Gets the direction of the swipe
+    function get_swipe_direction(start_pos_x: length, current_pos_x: length, start_pos_y: length, current_pos_y: length) -> SwipeDirection {
+        if (current-pos-x > start-pos-x + 20px) {
+            return SwipeDirection.left;
+        } else if (current-pos-x < start-pos-x - 20px) {
+            return SwipeDirection.right;
+        }
+
+        if (current-pos-y > start-pos-y + 20px) {
+            return SwipeDirection.up;
+        } else if (current-pos-y < start-pos-y - 20px) {
+            return SwipeDirection.down;
+        }
+
+        return SwipeDirection.none;
+    }
+
+    // Sets the swipe direction
+    function handle_swipe(start_pos_x: length, current_pos_x: length, start_pos_y: length, current_pos_y: length) {
+        swipe_direction = root.get_swipe_direction(start-pos-x, current-pos-x, start-pos-y, current-pos-y);
+    }
+
+    // Fires the character_typed callback
+    function send_swipe_update(up: string, down: string, left: string, right: string) {
+        if (swipe_direction == SwipeDirection.up) {
+            root.character_typed(up);
+        } else if (swipe_direction == SwipeDirection.down) {
+            root.character_typed(down);
+        } else if (swipe_direction == SwipeDirection.right) {
+            root.character_typed(right);
+        } else if (swipe_direction == SwipeDirection.left) {
+            root.character_typed(left);
         }
     }
 }
