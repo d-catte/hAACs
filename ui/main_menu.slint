@@ -1,0 +1,29 @@
+import { MainMenuWidget } from "main_menu_widget.slint";
+export component MainMenu inherits Window {
+    background: #383838;
+    full-screen: true;
+    height: 600px;
+    title: "hAACs";
+    width: 1024px;
+
+    Rectangle {
+        height: 100px;
+        width: 1024px;
+        y: 0px;
+        x: 0px;
+        z: 2;
+        background: #000000;
+        Text {
+            color: #ffffff;
+            font-size: 50px;
+            horizontal-alignment: TextHorizontalAlignment.center;
+            letter-spacing: 5px;
+            text: "hAACs";
+            vertical-alignment: TextVerticalAlignment.center;
+        }
+    }
+    selected_widget := MainMenuWidget {
+        x: 512px;
+        y: 350px;
+    }
+}
