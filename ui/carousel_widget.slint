@@ -1,0 +1,78 @@
+import { CarouselTitleLabel } from "carousel_title.slint";
+import { CarouselTheme } from "carousel_theme.slint";
+
+export component CarouselWidget inherits Rectangle {
+    in property <string> title: "title";
+    in property <bool> is-selected: false;
+    in property <image> image-source <=> image.source;
+
+    callback clicked <=> touch-area.clicked;
+
+    private property <length> spacing: CarouselTheme.spacing-medium;
+    private property <length> title-spacing: CarouselTheme.spacing-medium;
+    private property <length> title-area-height: CarouselTheme.size-small;
+
+    border-radius: CarouselTheme.radius-regular;
+    background: CarouselTheme.background-regular;
+    width: CarouselTheme.size-medium;
+    height: CarouselTheme.size-medium;
+    clip: false;
+
+    states [
+        pressed-selected when touch-area.pressed && root.is-selected  : {
+            background: CarouselTheme.background-selected-pressed;
+            image.colorize: CarouselTheme.foreground-selected-pressed;
+            width: CarouselTheme.size-big;
+            height: CarouselTheme.size-big;
+            title_label.visible: true;
+        }
+        hover-selected when touch-area.has-hover && root.is-selected  : {
+            background: CarouselTheme.background-selected-hover;
+            image.colorize: CarouselTheme.foreground-selected-hover;
+            width: CarouselTheme.size-big;
+            height: CarouselTheme.size-big;
+            title-label.visible: true;
+        }
+        pressed when touch-area.pressed : {
+            background: CarouselTheme.background-pressed;
+            image.colorize: CarouselTheme.foreground-pressed;
+        }
+
+        hover when touch-area.has-hover: {
+            background: CarouselTheme.background-hover;
+            image.colorize: CarouselTheme.foreground-hover;
+        }
+        selected when root.is-selected : {
+            background: CarouselTheme.background-selected;
+            image.colorize: CarouselTheme.foreground-selected;
+            width: CarouselTheme.size-big;
+            height: CarouselTheme.size-big;
+            title-label.visible: true;
+        }
+     ]
+
+     animate width { duration: CarouselTheme.duration-regular; easing: ease-in; }
+     animate height { duration: CarouselTheme.duration-regular; easing: ease-in; }
+     animate background { duration: CarouselTheme.duration-fast; }
+
+    touch-area := TouchArea {}
+
+    image := Image {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 80%;
+        height: 80%;
+        colorize: CarouselTheme.foreground;
+
+        animate colorize { duration: CarouselTheme.duration-fast; }
+    }
+
+    // Selection text
+    title-label := CarouselTitleLabel {
+        x: (parent.width - self.width) / 2;
+        y: parent.height;
+        text <=> root.title;
+        visible: false;
+        color: CarouselTheme.foreground;
+    }
+}

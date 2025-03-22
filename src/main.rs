@@ -1,4 +1,5 @@
 mod keyboard;
+mod main_menu;
 
 use crate::keyboard::Keyboard;
 use ::tts::Tts;
@@ -7,6 +8,7 @@ use std::time::Duration;
 
 slint::include_modules!();
 fn main() {
+    /*
     println!("Hello, world!");
 
     let mut tts = Tts::default().unwrap();
@@ -20,4 +22,7 @@ fn main() {
     }
 
     let _ = Keyboard::new();
+
+     */
+    let _ = main_menu::BaseMenu::new();
 }

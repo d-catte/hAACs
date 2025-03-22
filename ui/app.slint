@@ -1,0 +1,21 @@
+enum Screen {
+    MainMenu,
+    Game,
+    Settings,
+    AAC
+}
+
+export component App inherits Window {
+    in-out property <Screen> current_screen: MainMenu;
+
+    title: "hAACs";
+    full-screen: true;
+    height: 600px;
+    width: 1024px;
+
+    public function set_screen(screen: Screen) {
+        self.current_screen = screen;
+    }
+
+
+}

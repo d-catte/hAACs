@@ -1,0 +1,97 @@
+import { CarouselTheme } from "carousel_theme.slint";
+
+export component Carousel {
+    in-out property <int> selected-index;
+    in property <length> spacing;
+    in property <length> itemWidth;
+    in property <int> count: 0;
+
+    callback move-right();
+    callback move-left();
+    callback move-focus-up();
+
+    move-right => {
+        root.selected-index = min(root.selected-index + 1, root.count - 1);
+    }
+
+    move-left => {
+        root.selected-index = max(root.selected-index - 1, 0);
+    }
+
+    private property <length> center-x: (root.width - CarouselTheme.size-big) / 2;
+    private property <duration> duration: CarouselTheme.duration-regular;
+
+    forward-focus: focus-scope;
+    height: CarouselTheme.size-big;
+    preferred-width: 100%;
+
+    focus-scope := FocusScope {}
+
+    private property <length> swipe_magnitude;
+    private property <int> move_count: 0;
+
+    swipe := SwipeGestureHandler {
+        handle-swipe-left: true;
+        handle-swipe-right: true;
+
+        swiped => {
+            root.move_count = 0;
+        }
+
+
+        moved => {
+                    root.swipe_magnitude = abs(self.pressed-position.x - self.current-position.x);
+
+                    if (self.current-position.x > self.pressed-position.x + root.itemWidth / 2) {
+                        if (root.swipe_magnitude > root.itemWidth * (0.5 + root.move_count * 1.5)) {
+                            root.move-left();
+                            root.move_count += 1;
+                        }
+                    } else if (self.current-position.x < self.pressed-position.x - root.itemWidth / 2) {
+                        if (root.swipe_magnitude > root.itemWidth * (0.5 + root.move_count * 1.5)) {
+                            root.move-right();
+                            root.move_count += 1;
+                        }
+                    }
+                }
+
+        TouchArea {
+            clicked => {
+                focus-scope.focus()
+            }
+        }
+
+        Rectangle {
+            clip: true;
+
+            Rectangle {
+                property <length> viewport-x: root.center-x - root.selected-index * (root.itemWidth + root.spacing);
+                animate viewport-x {
+                    duration: root.duration;
+                    easing: ease-in;
+                }
+                property <length> swipe-offset: 0;
+                x: self.viewport-x + swipe-offset;
+                width: inner-layout.preferred-width;
+
+                states [
+                    swipping when swipe.swiping: {
+                        swipe-offset: (swipe.current-position.x - swipe.pressed-position.x).clamp(-root.itemWidth, root.itemWidth);
+                        out {
+                            animate swipe-offset {
+                                duration: root.duration;
+                                easing: ease-in;
+                            }
+                        }
+                    }
+                ]
+
+                inner-layout := HorizontalLayout {
+                    spacing <=> root.spacing;
+
+                    @children
+                }
+            }
+        }
+    }
+}

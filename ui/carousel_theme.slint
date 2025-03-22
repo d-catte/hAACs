@@ -1,0 +1,46 @@
+import "fonts/Roboto-Regular.ttf";
+
+export global CarouselTheme  {
+    // brushes
+    out property <brush> window-background: #2C2F36;
+    out property <brush> background-regular: #636363;
+    out property <brush> background-hover: root.background-regular.darker(0.2);
+    out property <brush> background-pressed: root.background-regular.darker(0.4);
+    out property <brush> background-selected: root.foreground;
+    out property <brush> background-selected-hover: root.background-selected.darker(0.2);
+    out property <brush> background-selected-pressed: root.background-selected.darker(0.4);
+    out property <brush> foreground: #FFFFFF;
+    out property <brush> foreground-hover: root.foreground.darker(0.2);
+    out property <brush> foreground-pressed: root.foreground.darker(0.4);
+    out property <brush> foreground-selected: root.background-regular;
+    out property <brush> foreground-selected-hover: root.foreground-selected.darker(0.2);
+    out property <brush> foreground-selected-pressed: root.foreground-selected.darker(0.4);
+
+    // durations
+    out property <duration> duration-fast: 100ms;
+    out property <duration> duration-regular: 250ms;
+
+    // radius
+    out property <length> radius-regular: 16px;
+
+    // sizes
+    out property <length> size-small: 24px;
+    out property <length> size-regular: 32px;
+    out property <length> size-medium: 200px;
+    out property <length> size-big: 350px;
+
+    // opacity
+    out property <float> opacity-medium: 0.4;
+    out property <float> opacity-big: 1;
+
+    // spacings
+    out property <length> spacing-regular: 4px;
+    out property <length> spacing-medium: 8px;
+
+    // typo
+    out property <string> font-family: "Roboto";
+    out property <length> font-size-regular: 12px;
+    out property <length> font-size-medium: 40px;
+    out property <int> font-weight-regular: 400;
+    out property <int> font-weight-bold: 900;
+}

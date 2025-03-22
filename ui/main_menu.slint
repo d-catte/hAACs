@@ -1,9 +1,10 @@
-import { MainMenuWidget } from "main_menu_widget.slint";
-export component MainMenu inherits Window {
+import { Carousel } from "carousel.slint";
+import { CarouselTheme } from "carousel_theme.slint";
+import { CarouselWidget } from "carousel_widget.slint";
+
+export component MainMenu inherits Rectangle {
     background: #383838;
-    full-screen: true;
     height: 600px;
-    title: "hAACs";
     width: 1024px;
 
     Rectangle {
@@ -22,8 +23,30 @@ export component MainMenu inherits Window {
             vertical-alignment: TextVerticalAlignment.center;
         }
     }
-    selected_widget := MainMenuWidget {
-        x: 512px;
-        y: 350px;
-    }
+
+    private property <[{ title: string, image: image}]> navigation-items: [
+           { title: "AAC", image: @image-url("svg/settings_black.svg") },
+           { title: "Game", image: @image-url("svg/home_black.svg") },
+           { title: "Settings", image: @image-url("svg/info_black.svg") },
+        ];
+    private property <int> selected-index: 1;
+
+    carousel := Carousel {
+            y: 50px;
+            height: 100%;
+            itemWidth: CarouselTheme.size-medium;
+            count: root.navigation-items.length;
+            selected-index <=> root.selected-index;
+            spacing: CarouselTheme.spacing-medium;
+
+            for item[index] in root.navigation-items : CarouselWidget {
+                clicked => { root.selected-index = index; }
+
+                is-selected: index == root.selected-index;
+                opacity: self.is-selected ? CarouselTheme.opacity-big : CarouselTheme.opacity-medium;
+                title: item.title;
+                image-source: item.image;
+                y: (parent.height - self.height) / 2;
+            }
+        }
 }
