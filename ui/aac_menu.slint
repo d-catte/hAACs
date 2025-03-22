@@ -1,3 +1,117 @@
-export component AACMenu inherits Rectangle {
+import { BasicScreen } from "basic_screen.slint";
+import { HomeButton } from "widgets/home_button/home_button.slint";
+import { KeyboardOverlay } from "keyboard_overlay.slint";
+import { TextBox } from "widgets/textbox/textbox.slint";
+import { Button } from "std-widgets.slint";
+export component AACMenu inherits BasicScreen {
+    HomeButton {
+        x: text_box.editing ? 5px : 969px;
+        
+        animate x {
+             duration: 300ms;
+             easing: ease-in-out;
+        }
 
+        clicked => {
+            root.return_to_main_menu();
+        }
+    }
+
+    keyboard := KeyboardOverlay {
+        on_keyboard_close => {
+            text_box.editing = false;
+        }
+    }
+
+    Button {
+       text: "Speak";
+       width: 100px;
+       height: 50px;
+       x: 150px;
+       y: text_box.editing ? 5px : 100px;
+
+       animate y {
+           duration: 300ms;
+           easing: ease-in-out;
+       }
+
+       clicked => {
+            tts(text_box.text_value);
+       }
+    }
+
+    Button {
+        text: "Clear";
+        width: 100px;
+        height: 50px;
+        x: 775px;
+        y: text_box.editing ? 5px : 100px;
+        
+        animate y {
+             duration: 300ms;
+             easing: ease-in-out;
+        }
+        
+        clicked => {
+            text_box.push_string("");
+        }
+    }
+
+    Button {
+       text: "←";
+       width: 100px;
+       height: 50px;
+       x: 300px;
+       y: text_box.editing ? 5px : 100px;
+
+       animate y {
+           duration: 300ms;
+           easing: ease-in-out;
+       }
+
+       clicked => {
+           text_box.move_cursor(-1);
+       }
+    }
+
+    Button {
+        text: "→";
+        width: 100px;
+        height: 50px;
+        x: 625px;
+        y: text_box.editing ? 5px : 100px;
+
+        animate y {
+             duration: 300ms;
+             easing: ease-in-out;
+        }
+
+        clicked => {
+            text_box.move_cursor(1);
+        }
+    }
+
+
+    text_box := TextBox {
+        width: 900px;
+        height: self.editing ? 235px : 400px;
+        y: self.editing ? 60px : 175px;
+
+        animate y {
+            duration: 300ms;
+            easing: ease-in-out;
+        }
+        
+        animate height {
+             duration: 300ms;
+             easing: ease-in-out;
+        }
+
+        open_keyboard(current_string) => {
+            keyboard.keyboard_enabled = true;
+        }
+    }
+
+    // TODO Implement TTS callback
+    callback tts(text: string);
 }

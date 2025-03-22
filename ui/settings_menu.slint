@@ -1,3 +1,9 @@
-export component SettingsMenu inherits Rectangle {
-
+import { BasicScreen } from "basic_screen.slint";
+import { HomeButton } from "widgets/home_button/home_button.slint";
+export component SettingsMenu inherits BasicScreen {
+    HomeButton {
+        clicked => {
+            root.return_to_main_menu();
+        }
+    }
 }

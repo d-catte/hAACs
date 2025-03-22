@@ -1,12 +1,16 @@
+import { MainMenu } from "main_menu.slint";
+import { SettingsMenu } from "settings_menu.slint";
+import { AlphabetGame } from "games/alphabet_game/alphabet_game.slint";
+import { AACMenu } from "aac_menu.slint";
 enum Screen {
-    MainMenu,
-    Game,
-    Settings,
-    AAC
+    Menu,
+    AAC,          // Index 0
+    AlphabetGame, // Index 1
+    Settings      // Index 2
 }
 
 export component App inherits Window {
-    in-out property <Screen> current_screen: MainMenu;
+    in-out property <Screen> current_screen: Menu;
 
     title: "hAACs";
     full-screen: true;
@@ -17,5 +21,41 @@ export component App inherits Window {
         self.current_screen = screen;
     }
 
+    MainMenu {
+        visible: current_screen == Screen.Menu;
+        carousel_clicked(index) => {
+            set_screen_from_index(index);
+        }
+    }
 
+    SettingsMenu {
+        visible: current_screen == Screen.Settings;
+        return_to_main_menu => {
+            set_screen(Screen.Menu);
+        }
+    }
+
+    AlphabetGame {
+        visible: current_screen == Screen.AlphabetGame;
+        return_to_main_menu => {
+            set_screen(Screen.Menu);
+        }
+    }
+
+    AACMenu {
+        visible: current_screen == Screen.AAC;
+        return_to_main_menu => {
+            set_screen(Screen.Menu);
+        }
+    }
+
+    public function set_screen_from_index(index: int) {
+        if (index == 0) {
+            set_screen(Screen.AAC);
+        } else if (index == 1) {
+            set_screen(Screen.AlphabetGame);
+        } else {
+            set_screen(Screen.Settings);
+        }
+    }
 }

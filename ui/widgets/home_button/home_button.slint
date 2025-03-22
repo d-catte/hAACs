@@ -1,0 +1,26 @@
+export component HomeButton inherits Rectangle {
+    height: 50px;
+    width: 50px;
+    x: 969px;
+    y: 5px;
+    z: 5;
+    background: #636363;
+    border-radius: 8px;
+
+    TouchArea {
+        height: 100%;
+        width: 100%;
+
+        Text {
+            text: "⌂";
+            font-size: 50px;
+            y: -12px;
+        }
+
+        clicked => {
+            clicked();
+        }
+    }
+
+    callback clicked();
+}

@@ -1,12 +1,9 @@
-import { Carousel } from "carousel.slint";
-import { CarouselTheme } from "carousel_theme.slint";
-import { CarouselWidget } from "carousel_widget.slint";
+import { Carousel } from "widgets/carousel/carousel.slint";
+import { CarouselTheme } from "widgets/carousel/carousel_theme.slint";
+import { CarouselWidget } from "widgets/carousel/carousel_widget.slint";
+import { BasicScreen } from "basic_screen.slint";
 
-export component MainMenu inherits Rectangle {
-    background: #383838;
-    height: 600px;
-    width: 1024px;
-
+export component MainMenu inherits BasicScreen {
     Rectangle {
         height: 100px;
         width: 1024px;
@@ -25,9 +22,9 @@ export component MainMenu inherits Rectangle {
     }
 
     private property <[{ title: string, image: image}]> navigation-items: [
-           { title: "AAC", image: @image-url("svg/settings_black.svg") },
-           { title: "Game", image: @image-url("svg/home_black.svg") },
-           { title: "Settings", image: @image-url("svg/info_black.svg") },
+           { title: "AAC", image: @image-url("images/aac.png") },
+           { title: "Alphabet Game", image: @image-url("images/alphabet.png") },
+           { title: "Settings", image: @image-url("images/settings.png") },
         ];
     private property <int> selected-index: 1;
 
@@ -40,7 +37,13 @@ export component MainMenu inherits Rectangle {
             spacing: CarouselTheme.spacing-medium;
 
             for item[index] in root.navigation-items : CarouselWidget {
-                clicked => { root.selected-index = index; }
+                clicked => {
+                    if (root.selected-index == index) {
+                        carousel_clicked(index);
+                    } else {
+                        root.selected-index = index;
+                    }
+                }
 
                 is-selected: index == root.selected-index;
                 opacity: self.is-selected ? CarouselTheme.opacity-big : CarouselTheme.opacity-medium;
@@ -48,5 +51,7 @@ export component MainMenu inherits Rectangle {
                 image-source: item.image;
                 y: (parent.height - self.height) / 2;
             }
-        }
+    }
+
+    callback carousel_clicked(index: int);
 }

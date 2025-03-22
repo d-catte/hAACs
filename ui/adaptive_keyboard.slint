@@ -6,7 +6,7 @@ export enum SwipeDirection {
     none
 }
 
-export component AdaptiveKeyboard inherits Window {
+export component AdaptiveKeyboard inherits Rectangle {
     in-out property<SwipeDirection> swipe_direction;
     in property <string> word_suggestion_one: "";
     in property <string> word_suggestion_two: "";
@@ -14,8 +14,6 @@ export component AdaptiveKeyboard inherits Window {
 
     height: 300px;
     width: 1024px;
-    no-frame: false;
-    title: "hAACs Runtime";
 
     Rectangle {
         border-color: #00ff04;

@@ -1,0 +1,61 @@
+import { CarouselTheme } from "../carousel/carousel_theme.slint";
+
+export component TextBox inherits Rectangle {
+    in-out property <bool> editing: false;
+    in-out property <string> text_value: "TESTING";
+    property <string> cached_cursor_visible_text;
+    property <string> cached_cursor_invisible_text;
+    property <bool> cursor_visible: false;
+    property <int> cursor_index: text_value.character-count;
+
+    border-width: 2px;
+    border-color: editing ? red : CarouselTheme.background-regular;
+
+    Timer {
+        running: editing;
+        interval: 500ms;
+        triggered => {
+            cursor_visible = !cursor_visible;
+        }
+    }
+
+    value := Text {
+        text: editing ? text_value + (cursor_visible ? "|" : " ") : text_value;
+        font-size: CarouselTheme.font-size-regular;
+        width: 95%;
+        height: 95%;
+    }
+    
+    TouchArea {
+        width: 100%;
+        height: 100%;
+        
+        clicked => {
+            editing = true;
+            cursor_index = text_value.character-count;
+            open_keyboard(text_value);
+        }
+    }
+    
+    callback open_keyboard(current_string: string);
+
+    public function push_string(new_string: string) {
+        text_value = new-string;
+    }
+    
+    public function on_keyboard_close() {
+        editing = false;
+    }
+
+    public function move_cursor(offset: int) {
+        if (offset + cursor_index <= text_value.character-count && offset + cursor_index >= 0) {
+            cursor_index += offset;
+            cached_cursor_visible_text = get_visible_cursor_text(text_value, cursor_index);
+            cached_cursor_invisible_text = get_invisible_cursor_text(text_value, cursor_index);
+        }
+    }
+
+    // TODO Finish the callbacks in Rust
+    callback get_visible_cursor_text(text: string, cursor_index: int) -> string;
+    callback get_invisible_cursor_text(text: string, cursor_index: int) -> string;
+}

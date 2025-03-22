@@ -1,0 +1,54 @@
+import { AdaptiveKeyboard } from "adaptive_keyboard.slint.";
+export component KeyboardOverlay inherits Rectangle {
+    in-out property <bool> keyboard_enabled: false;
+
+    animate height {
+        duration: 300ms;
+        easing: ease-in-out;
+    }
+
+    height: 600px;
+    width: 1024px;
+    background: transparent;
+    z: 3;
+
+    keyboard := AdaptiveKeyboard {
+        animate y {
+            duration: 300ms;
+            easing: ease-in-out;
+        }
+        y: keyboard_enabled ? 300px : 600px;
+    }
+
+    Rectangle {
+        width: 50px;
+        height: 50px;
+        x: 970px;
+        y: 0px;
+        opacity: keyboard_enabled ? 1 : 0;
+
+        animate opacity {
+             duration: 300ms;
+             easing: ease-in-out;
+        }
+
+        TouchArea {
+            enabled: keyboard_enabled;
+            width: 100%;
+            height: 100%;
+
+            mouse-cursor: MouseCursor.pointer;
+            clicked => {
+                root.keyboard_enabled = false;
+                on_keyboard_close();
+            }
+
+            Text {
+                text: "⌨";
+                font-size: 30px;
+            }
+        }
+    }
+    
+    callback on_keyboard_close();
+}
