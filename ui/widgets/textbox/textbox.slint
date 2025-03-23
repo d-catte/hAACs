@@ -1,12 +1,13 @@
 import { CarouselTheme } from "../carousel/carousel_theme.slint";
+import { AACCallback } from "../../callback/aac_callbacks.slint";
 
 export component TextBox inherits Rectangle {
     in-out property <bool> editing: false;
-    in-out property <string> text_value: "TESTING";
-    property <string> cached_cursor_visible_text;
-    property <string> cached_cursor_invisible_text;
+    in-out property <string> text_value <=> AACCallback.text;
+    property <string> cached_cursor_visible_text <=> AACCallback.visible_cursor_text;
+    property <string> cached_cursor_invisible_text <=> AACCallback.invisible_cursor_text;
     property <bool> cursor_visible: false;
-    property <int> cursor_index: text_value.character-count;
+    property <int> cursor_index <=> AACCallback.cursor_index;
 
     border-width: 2px;
     border-color: editing ? red : CarouselTheme.background-regular;
@@ -20,7 +21,7 @@ export component TextBox inherits Rectangle {
     }
 
     value := Text {
-        text: editing ? text_value + (cursor_visible ? "|" : " ") : text_value;
+        text: editing ? (cursor_visible ? cached_cursor_visible_text : cached_cursor_invisible_text) : text_value;
         font-size: CarouselTheme.font-size-regular;
         width: 95%;
         height: 95%;
@@ -50,12 +51,10 @@ export component TextBox inherits Rectangle {
     public function move_cursor(offset: int) {
         if (offset + cursor_index <= text_value.character-count && offset + cursor_index >= 0) {
             cursor_index += offset;
-            cached_cursor_visible_text = get_visible_cursor_text(text_value, cursor_index);
-            cached_cursor_invisible_text = get_invisible_cursor_text(text_value, cursor_index);
+            cursor_moved();
         }
     }
 
     // TODO Finish the callbacks in Rust
-    callback get_visible_cursor_text(text: string, cursor_index: int) -> string;
-    callback get_invisible_cursor_text(text: string, cursor_index: int) -> string;
+    pure callback cursor_moved <=> AACCallback.cursor_moved;
 }

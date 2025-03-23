@@ -2,6 +2,9 @@ import { MainMenu } from "main_menu.slint";
 import { SettingsMenu } from "settings_menu.slint";
 import { AlphabetGame } from "games/alphabet_game/alphabet_game.slint";
 import { AACMenu } from "aac_menu.slint";
+import { KeyboardCallback } from "callback/keyboard_callbacks.slint";
+import { AACCallback } from "callback/aac_callbacks.slint";
+
 enum Screen {
     Menu,
     AAC,          // Index 0
@@ -13,7 +16,7 @@ export component App inherits Window {
     in-out property <Screen> current_screen: Menu;
 
     title: "hAACs";
-    full-screen: true;
+    full-screen: false; //TODO Change to true
     height: 600px;
     width: 1024px;
 
@@ -58,4 +61,17 @@ export component App inherits Window {
             set_screen(Screen.Settings);
         }
     }
+
+    // Callbacks
+    pure callback autocomplete <=> KeyboardCallback.autocomplete;
+    pure callback character_typed <=> KeyboardCallback.character_typed;
+    pure callback tts <=> AACCallback.tts;
+    pure callback cursor_moved <=> AACCallback.cursor_moved;
+
+    // Callback Vars
+    in-out property <[string]> auto_complete <=> KeyboardCallback.auto_complete;
+    in-out property <string> visible_cursor_text <=> AACCallback.visible_cursor_text;
+    in-out property <string> invisible_cursor_text <=> AACCallback.invisible_cursor_text;
+    in-out property <int> cursor_index <=> AACCallback.cursor_index;
+    in-out property <string> text_value <=> AACCallback.text;
 }

@@ -3,6 +3,7 @@ import { HomeButton } from "widgets/home_button/home_button.slint";
 import { KeyboardOverlay } from "keyboard_overlay.slint";
 import { TextBox } from "widgets/textbox/textbox.slint";
 import { Button } from "std-widgets.slint";
+import { AACCallback } from "callback/aac_callbacks.slint";
 export component AACMenu inherits BasicScreen {
     HomeButton {
         x: text_box.editing ? 5px : 969px;
@@ -53,7 +54,10 @@ export component AACMenu inherits BasicScreen {
         }
         
         clicked => {
-            text_box.push_string("");
+            AACCallback.text = "";
+            AACCallback.invisible_cursor_text = " ";
+            AACCallback.visible_cursor_text = "|";
+            AACCallback.cursor_index = 0;
         }
     }
 
@@ -112,6 +116,5 @@ export component AACMenu inherits BasicScreen {
         }
     }
 
-    // TODO Implement TTS callback
-    callback tts(text: string);
+    pure callback tts <=> AACCallback.tts;
 }

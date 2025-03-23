@@ -8,6 +8,7 @@ build = "build.rs"
 [dependencies]
 slint = "1.10.0"
 tts = "0.26.3"
+fuzzy-matcher = "*"
 
 [build-dependencies]
 slint-build = "1.10.0"

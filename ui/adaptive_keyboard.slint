@@ -1,3 +1,4 @@
+import { KeyboardCallback } from "callback/keyboard_callbacks.slint";
 export enum SwipeDirection {
     up,
     down,
@@ -8,9 +9,7 @@ export enum SwipeDirection {
 
 export component AdaptiveKeyboard inherits Rectangle {
     in-out property<SwipeDirection> swipe_direction;
-    in property <string> word_suggestion_one: "";
-    in property <string> word_suggestion_two: "";
-    in property <string> word_suggestion_three: "";
+    in-out property <[string]> word_suggestions <=> KeyboardCallback.auto_complete;
 
     height: 300px;
     width: 1024px;
@@ -528,7 +527,7 @@ export component AdaptiveKeyboard inherits Rectangle {
             word_one := Text {
                 font-size: 20px;
                 horizontal-alignment: TextHorizontalAlignment.center;
-                text: root.word_suggestion_one;
+                text: root.word_suggestions[0];
                 vertical-alignment: TextVerticalAlignment.center;
                 col: 0;
                 row: 0;
@@ -542,7 +541,7 @@ export component AdaptiveKeyboard inherits Rectangle {
             word_two := Text {
                             font-size: 20px;
                             horizontal-alignment: TextHorizontalAlignment.center;
-                            text: root.word_suggestion_two;
+                            text: root.word_suggestions[1];
                             vertical-alignment: TextVerticalAlignment.center;
                             col: 1;
                             row: 0;
@@ -556,7 +555,7 @@ export component AdaptiveKeyboard inherits Rectangle {
             word_three := Text {
                             font-size: 20px;
                             horizontal-alignment: TextHorizontalAlignment.center;
-                            text: root.word_suggestion_three;
+                            text: root.word_suggestions[2];
                             vertical-alignment: TextVerticalAlignment.center;
                             col: 2;
                             row: 0;
@@ -571,10 +570,10 @@ export component AdaptiveKeyboard inherits Rectangle {
     }
 
     // Called when a character button is pressed
-    pure callback character_typed(string);
+    pure callback character_typed <=> KeyboardCallback.character_typed;
 
     // Called when a suggestion word button is pressed
-    pure callback autocomplete(string);
+    pure callback autocomplete <=> KeyboardCallback.autocomplete;
 
     // Gets the direction of the swipe
     function get_swipe_direction(start_pos_x: length, current_pos_x: length, start_pos_y: length, current_pos_y: length) -> SwipeDirection {
