@@ -1,9 +1,9 @@
 mod word_model;
 
-use std::ops::{AddAssign};
+use crate::word_model::TextCompletion;
 use ::tts::Tts;
 use slint::{ModelRc, SharedString};
-use crate::word_model::TextCompletion;
+use std::ops::AddAssign;
 
 slint::include_modules!();
 fn main() {
@@ -31,7 +31,7 @@ fn main() {
     let app_weak = app.as_weak();
 
     // Type Character
-    app.on_character_typed( {
+    app.on_character_typed({
         let app_clone = app_weak.clone().unwrap();
         move |character| {
             println!("{:?}", character);
@@ -51,38 +51,56 @@ fn main() {
                 }
                 _ => {
                     if should_be_capital(&text) {
-                        app_clone.set_text_value(insert_character_at_index(&text, index as usize, character.chars().next().unwrap()));
+                        app_clone.set_text_value(insert_character_at_index(
+                            &text,
+                            index as usize,
+                            character.chars().next().unwrap(),
+                        ));
                     } else {
                         let mut char = character.chars().next().unwrap();
                         if char >= 'A' || char <= 'Z' {
                             char = char.to_ascii_lowercase();
                         }
-                        app_clone.set_text_value(insert_character_at_index(&text, index as usize, char));
+                        app_clone.set_text_value(insert_character_at_index(
+                            &text,
+                            index as usize,
+                            char,
+                        ));
                     }
                     app_clone.set_cursor_index(index + 1);
                 }
             }
             // Suggest new word
-            app_clone.set_auto_complete(ModelRc::from(text_complete.suggest(get_last_word(&app_clone.get_text_value()))));
+            app_clone.set_auto_complete(ModelRc::from(
+                text_complete.suggest(get_last_word(&app_clone.get_text_value())),
+            ));
 
             app_clone.invoke_cursor_moved();
         }
     });
 
     // Do Text To Speech
-    app.on_tts( move |text| {
+    app.on_tts(move |text| {
         tts.speak(text.as_str(), true).unwrap();
         println!("TTS");
     });
 
-    app.on_cursor_moved( {
+    app.on_cursor_moved({
         let app_clone = app_weak.clone().unwrap();
         move || {
             let text = app_clone.get_text_value();
             let index = app_clone.get_cursor_index();
 
-            app_clone.set_visible_cursor_text(insert_character_at_index(&text, index as usize, '|'));
-            app_clone.set_invisible_cursor_text(insert_character_at_index(&text, index as usize, ' '));
+            app_clone.set_visible_cursor_text(insert_character_at_index(
+                &text,
+                index as usize,
+                '|',
+            ));
+            app_clone.set_invisible_cursor_text(insert_character_at_index(
+                &text,
+                index as usize,
+                ' ',
+            ));
         }
     });
 
@@ -94,7 +112,7 @@ fn main() {
             let new_length = text.len() - last_word.len();
             let mut binding = SharedString::from(&text.as_str()[..new_length]);
             text = &mut binding;
-            if should_be_capital(&text) {
+            if should_be_capital(text) {
                 let first_char = string.chars().next().unwrap().to_ascii_uppercase();
                 string = replace_first_character(&string, first_char);
             }
@@ -113,7 +131,11 @@ fn main() {
     app.run().unwrap();
 }
 
-fn insert_character_at_index(shared_string: &SharedString, index: usize, character: char) -> SharedString {
+fn insert_character_at_index(
+    shared_string: &SharedString,
+    index: usize,
+    character: char,
+) -> SharedString {
     let mut string = shared_string.to_string();
     string.insert(index, character);
     SharedString::from(string)
@@ -121,7 +143,7 @@ fn insert_character_at_index(shared_string: &SharedString, index: usize, charact
 
 fn remove_character_at_index(shared_string: &SharedString, index: usize) -> SharedString {
     let mut string = shared_string.to_string();
-    string.remove(index-1);
+    string.remove(index - 1);
     SharedString::from(string)
 }
 
