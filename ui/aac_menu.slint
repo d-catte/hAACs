@@ -7,7 +7,7 @@ import { AACCallback } from "callback/aac_callbacks.slint";
 export component AACMenu inherits BasicScreen {
     HomeButton {
         x: text_box.editing ? 5px : 969px;
-        
+
         animate x {
              duration: 300ms;
              easing: ease-in-out;
@@ -37,7 +37,7 @@ export component AACMenu inherits BasicScreen {
        }
 
        clicked => {
-            tts(text_box.text_value);
+            AACCallback.tts(text_box.text_value);
        }
     }
 
@@ -47,7 +47,7 @@ export component AACMenu inherits BasicScreen {
         height: 50px;
         x: 775px;
         y: text_box.editing ? 5px : 100px;
-        
+
         animate y {
              duration: 300ms;
              easing: ease-in-out;
@@ -95,7 +95,6 @@ export component AACMenu inherits BasicScreen {
         }
     }
 
-
     text_box := TextBox {
         width: 900px;
         height: self.editing ? 235px : 400px;
@@ -115,6 +114,4 @@ export component AACMenu inherits BasicScreen {
             keyboard.keyboard_enabled = true;
         }
     }
-
-    pure callback tts <=> AACCallback.tts;
 }

@@ -1,4 +1,6 @@
 import { AdaptiveKeyboard } from "adaptive_keyboard.slint.";
+import { StandardKeyboard } from "basic_keyboard.slint";
+import { KeyboardCallback, Keyboard } from "callback/keyboard_callbacks.slint";
 export component KeyboardOverlay inherits Rectangle {
     in-out property <bool> keyboard_enabled: false;
 
@@ -12,7 +14,15 @@ export component KeyboardOverlay inherits Rectangle {
     background: transparent;
     z: 3;
 
-    keyboard := AdaptiveKeyboard {
+    if KeyboardCallback.current_keyboard == Keyboard.Standard: StandardKeyboard {
+        animate y {
+            duration: 300ms;
+            easing: ease-in-out;
+        }
+        y: keyboard_enabled ? 300px : 600px;
+    }
+
+    if KeyboardCallback.current_keyboard == Keyboard.Swipe: AdaptiveKeyboard {
         animate y {
             duration: 300ms;
             easing: ease-in-out;

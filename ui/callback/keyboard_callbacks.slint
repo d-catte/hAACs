@@ -1,5 +1,11 @@
+export enum Keyboard {
+    Swipe,
+    Standard
+}
+
 export global KeyboardCallback {
-    in-out property <[string]> auto_complete: ["One", "Two", "Three"];
+    in-out property <[string]> auto_complete: ["", "", ""];
+    in-out property <Keyboard> current_keyboard: Keyboard.Standard;
     pure callback autocomplete(string);
     pure callback character_typed(string);
 }

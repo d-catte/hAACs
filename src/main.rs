@@ -34,7 +34,6 @@ fn main() {
     app.on_character_typed({
         let app_clone = app_weak.clone().unwrap();
         move |character| {
-            println!("{:?}", character);
             let text = app_clone.get_text_value();
             let index = app_clone.get_cursor_index();
             match character.as_str() {
@@ -82,7 +81,6 @@ fn main() {
     // Do Text To Speech
     app.on_tts(move |text| {
         tts.speak(text.as_str(), true).unwrap();
-        println!("TTS");
     });
 
     app.on_cursor_moved({
