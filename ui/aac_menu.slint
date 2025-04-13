@@ -4,6 +4,7 @@ import { KeyboardOverlay } from "keyboard_overlay.slint";
 import { TextBox } from "widgets/textbox/textbox.slint";
 import { Button } from "std-widgets.slint";
 import { AACCallback } from "callback/aac_callbacks.slint";
+import { KeyboardCallback, Keyboard } from "callback/keyboard_callbacks.slint";
 export component AACMenu inherits BasicScreen {
     HomeButton {
         x: text_box.editing ? 5px : 969px;

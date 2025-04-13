@@ -1,5 +1,7 @@
 import { CarouselTheme } from "../carousel/carousel_theme.slint";
 import { AACCallback } from "../../callback/aac_callbacks.slint";
+import { Format } from "../../data/format.slint";
+import { KeyboardCallback, Keyboard } from "../../callback/keyboard_callbacks.slint";
 
 export component TextBox inherits Rectangle {
     in-out property <bool> editing: false;
@@ -22,7 +24,7 @@ export component TextBox inherits Rectangle {
 
     value := Text {
         text: editing ? (cursor_visible ? cached_cursor_visible_text : cached_cursor_invisible_text) : text_value;
-        font-size: CarouselTheme.font-size-regular;
+        font-size: Format.aac_font_size;
         width: 95%;
         height: 95%;
     }
@@ -32,9 +34,11 @@ export component TextBox inherits Rectangle {
         height: 100%;
         
         clicked => {
-            editing = true;
-            cursor_index = text_value.character-count;
-            open_keyboard(text_value);
+            if (KeyboardCallback.current_keyboard != Keyboard.None) {
+                        editing = true;
+                        cursor_index = text_value.character-count;
+                        open_keyboard(text_value);
+            }
         }
     }
     
