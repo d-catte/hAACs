@@ -3,6 +3,7 @@ import { HomeButton } from "widgets/home_button/home_button.slint";
 import { Format } from "data/format.slint";
 import { Slider, ComboBox } from "std-widgets.slint";
 import { KeyboardCallback, Keyboard } from "callback/keyboard_callbacks.slint";
+import { AACCallback } from "callback/aac_callbacks.slint";
 export component SettingsMenu inherits BasicScreen {
     HomeButton {
         clicked => {
@@ -89,5 +90,36 @@ export component SettingsMenu inherits BasicScreen {
                     }
                 }
             }
+        }
+
+        Rectangle {
+                    width: 400px;
+                    height: 75px;
+                    x: 20px;
+                    y: 275px;
+                    border-radius: 8px;
+                    border-color: black;
+                    border-width: 2px;
+                    Text {
+                        x: 0px;
+                        y: 0px;
+                        height: 50px;
+                        width: 100%;
+                        text: "AAC Voices";
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                        font-size: 18px;
+                    }
+                    ComboBox {
+                        height: 20px;
+                        width: 90%;
+                        x: 20px;
+                        y: 40px;
+                        model: AACCallback.voices;
+                        current-value: AACCallback.voices[0];
+                        selected(current-value) => {
+                            AACCallback.set_voice(current-value);
+                        }
+                    }
         }
 }

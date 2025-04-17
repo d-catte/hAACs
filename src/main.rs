@@ -2,8 +2,10 @@ mod word_model;
 
 use crate::word_model::TextCompletion;
 use ::tts::Tts;
-use slint::{ModelRc, SharedString};
+use slint::{Model, ModelRc, SharedString, VecModel};
 use std::ops::AddAssign;
+use std::rc::Rc;
+use tts::Voice;
 
 slint::include_modules!();
 fn main() {
@@ -25,7 +27,9 @@ fn main() {
      */
     let app = App::new().unwrap();
 
-    let mut tts = Tts::default().unwrap();
+    let tts = Tts::default().unwrap();
+    app.set_voices(get_voices(&tts));
+
     let text_complete = TextCompletion::new();
 
     let app_weak = app.as_weak();
@@ -79,8 +83,11 @@ fn main() {
     });
 
     // Do Text To Speech
-    app.on_tts(move |text| {
-        tts.speak(text.as_str(), true).unwrap();
+    app.on_tts({
+        let mut tts_clone = tts.clone();
+        move |text| {
+            tts_clone.speak(text.as_str(), true).unwrap();
+        }
     });
 
     app.on_cursor_moved({
@@ -123,6 +130,14 @@ fn main() {
             text.add_assign("|");
             app_clone.set_visible_cursor_text(text.clone());
             app_clone.set_auto_complete(ModelRc::default());
+        }
+    });
+
+    app.on_set_voice({
+        let app_clone = app_weak.clone().unwrap();
+        let mut tts_clone = tts.clone();
+        move |string| {
+            tts_clone.set_voice(&get_voice_from_name(&string, &tts_clone, &app_clone)).unwrap();
         }
     });
 
@@ -169,4 +184,24 @@ fn replace_first_character(text: &SharedString, new_char: char) -> SharedString 
     let mut string = text.to_string();
     string.replace_range(0..1, &new_char.to_string());
     SharedString::from(string)
+}
+
+fn get_voices(tts: &Tts) -> ModelRc<SharedString> {
+    let voices = tts.voices().unwrap();
+    let voice_names: Vec<SharedString> = voices.iter().map(|voice| SharedString::from(voice.name())).collect();
+    let vec_model = VecModel::from(voice_names);
+    let rc_model = Rc::new(vec_model);
+    ModelRc::from(rc_model)
+}
+
+fn get_voice_from_name(name: &SharedString, tts: &Tts, app: &App) -> Voice {
+    let voices = app.get_voices();
+    let mut index = 0;
+    for (i, voice) in voices.iter().enumerate() {
+        if voice.eq(name) {
+            index = i;
+            break;
+        }
+    }
+    tts.voices().unwrap()[index].clone()
 }

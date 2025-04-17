@@ -1,8 +1,10 @@
 export global AACCallback {
     pure callback tts(text: string);
     pure callback cursor_moved();
+    pure callback set_voice(voice: string);
     in-out property <int> cursor_index;
     in-out property <string> text;
     in-out property <string> visible_cursor_text;
     in-out property <string> invisible_cursor_text;
+    in-out property <[string]> voices;
 }

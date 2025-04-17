@@ -16,6 +16,9 @@ export component AACMenu inherits BasicScreen {
 
         clicked => {
             root.return_to_main_menu();
+            text_box.on_keyboard_close();
+            keyboard.on_keyboard_close();
+            keyboard.keyboard_enabled = false;
         }
     }
 
@@ -38,7 +41,7 @@ export component AACMenu inherits BasicScreen {
        }
 
        clicked => {
-            AACCallback.tts(text_box.text_value);
+            AACCallback.tts(AACCallback.text);
        }
     }
 
@@ -62,7 +65,7 @@ export component AACMenu inherits BasicScreen {
         }
     }
 
-    Button {
+    if KeyboardCallback.current_keyboard != Keyboard.None: Button {
        text: "←";
        width: 100px;
        height: 50px;
@@ -79,7 +82,7 @@ export component AACMenu inherits BasicScreen {
        }
     }
 
-    Button {
+    if KeyboardCallback.current_keyboard != Keyboard.None: Button {
         text: "→";
         width: 100px;
         height: 50px;

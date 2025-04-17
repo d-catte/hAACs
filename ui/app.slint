@@ -67,6 +67,7 @@ export component App inherits Window {
     pure callback character_typed <=> KeyboardCallback.character_typed;
     pure callback tts <=> AACCallback.tts;
     pure callback cursor_moved <=> AACCallback.cursor_moved;
+    pure callback set_voice <=> AACCallback.set_voice;
 
     // Callback Vars
     in-out property <[string]> auto_complete <=> KeyboardCallback.auto_complete;
@@ -74,4 +75,5 @@ export component App inherits Window {
     in-out property <string> invisible_cursor_text <=> AACCallback.invisible_cursor_text;
     in-out property <int> cursor_index <=> AACCallback.cursor_index;
     in-out property <string> text_value <=> AACCallback.text;
+    in-out property <[string]> voices <=> AACCallback.voices;
 }
