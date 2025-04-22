@@ -4,6 +4,7 @@ import { Format } from "data/format.slint";
 import { Slider, ComboBox } from "std-widgets.slint";
 import { KeyboardCallback, Keyboard } from "callback/keyboard_callbacks.slint";
 import { AACCallback } from "callback/aac_callbacks.slint";
+import { SettingsData } from "data/settings_data.slint";
 export component SettingsMenu inherits BasicScreen {
     HomeButton {
         clicked => {
@@ -121,5 +122,36 @@ export component SettingsMenu inherits BasicScreen {
                             AACCallback.set_voice(current-value);
                         }
                     }
+        }
+
+   Rectangle {
+            width: 400px;
+            height: 75px;
+            x: 20px;
+            y: 370px;
+            border-radius: 8px;
+            border-color: black;
+            border-width: 2px;
+            Text {
+                x: 0px;
+                y: 0px;
+                height: 50px;
+                width: 100%;
+                text: "Audio Output";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 90%;
+                x: 20px;
+                y: 40px;
+                model: SettingsData.bluetooth_devices;
+                current-value: "Speakers";
+                selected(current-value) => {
+                    SettingsData.set_bluetooth_audio_device(current-value);
+                }
+            }
         }
 }

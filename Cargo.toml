@@ -9,6 +9,13 @@ build = "build.rs"
 slint = "1.10.0"
 tts = "0.26.3"
 fuzzy-matcher = "*"
+tokio = { version = "1.38.0", features = ["rt-multi-thread", "rt", "time"] }
+
+[target.'cfg(unix)'.dependencies]
+# Bluetooth
+bluez-async = "0.8.0"
 
 [build-dependencies]
 slint-build = "1.10.0"
+
+

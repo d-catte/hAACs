@@ -4,6 +4,7 @@ import { AlphabetGame } from "games/alphabet_game/alphabet_game.slint";
 import { AACMenu } from "aac_menu.slint";
 import { KeyboardCallback } from "callback/keyboard_callbacks.slint";
 import { AACCallback } from "callback/aac_callbacks.slint";
+import { SettingsData } from "data/settings_data.slint";
 
 enum Screen {
     Menu,
@@ -68,6 +69,8 @@ export component App inherits Window {
     pure callback tts <=> AACCallback.tts;
     pure callback cursor_moved <=> AACCallback.cursor_moved;
     pure callback set_voice <=> AACCallback.set_voice;
+    pure callback set_bluetooth_audio <=> SettingsData.set_bluetooth_audio_device;
+    pure callback refresh_bluetooth <=> SettingsData.refresh_bluetooth;
 
     // Callback Vars
     in-out property <[string]> auto_complete <=> KeyboardCallback.auto_complete;
@@ -76,4 +79,5 @@ export component App inherits Window {
     in-out property <int> cursor_index <=> AACCallback.cursor_index;
     in-out property <string> text_value <=> AACCallback.text;
     in-out property <[string]> voices <=> AACCallback.voices;
+    in-out property <[string]> bluetooth_devices <=> SettingsData.bluetooth_devices;
 }

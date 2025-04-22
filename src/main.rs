@@ -1,5 +1,7 @@
 mod word_model;
+mod bluetooth;
 
+use crate::bluetooth::BluetoothDevices;
 use crate::word_model::TextCompletion;
 use ::tts::Tts;
 use slint::{Model, ModelRc, SharedString, VecModel};
@@ -9,22 +11,6 @@ use tts::Voice;
 
 slint::include_modules!();
 fn main() {
-    /*
-    println!("Hello, world!");
-
-    let mut tts = Tts::default().unwrap();
-    tts.speak("This is an example line of text", true).unwrap();
-    thread::sleep(Duration::from_secs(3));
-    tts.speak("Here are my available voices", false).unwrap();
-    for voice in Tts::voices(&tts).unwrap() {
-        tts.set_voice(&voice).unwrap();
-        tts.speak(voice.name(), false).unwrap();
-        thread::sleep(Duration::from_secs(3));
-    }
-
-    let _ = Keyboard::new();
-
-     */
     let app = App::new().unwrap();
 
     let tts = Tts::default().unwrap();
@@ -33,6 +19,7 @@ fn main() {
     let text_complete = TextCompletion::new();
 
     let app_weak = app.as_weak();
+    let bluetooth_interface = Rc::new(BluetoothDevices::new());
 
     // Type Character
     app.on_character_typed({
@@ -138,6 +125,31 @@ fn main() {
         let mut tts_clone = tts.clone();
         move |string| {
             tts_clone.set_voice(&get_voice_from_name(&string, &tts_clone, &app_clone)).unwrap();
+        }
+    });
+    
+    app.on_set_bluetooth_audio({
+        let app_clone = app_weak.clone().unwrap();
+        let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
+        move |device| {
+            let devices = app_clone.get_bluetooth_devices();
+            let mut index = 0;
+            for (i, str) in devices.iter().enumerate() {
+                if str.eq(&device) {
+                    index = i;
+                    break;
+                }
+            }
+            let bt_device = &bluetooth_interface.devices[index];
+            bt_device.connect();
+        }
+    });
+
+    app.on_refresh_bluetooth({
+        let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
+        move || {
+            #[cfg(unix)]
+            bluetooth_interface.refresh_bluetooth();
         }
     });
 
