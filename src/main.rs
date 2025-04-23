@@ -1,6 +1,7 @@
 mod word_model;
 mod bluetooth;
 mod speedy_spellers;
+mod tts_impl;
 
 use crate::bluetooth::BluetoothDevices;
 use crate::speedy_spellers::SpeedySpeller;
@@ -9,22 +10,21 @@ use slint::{Model, ModelRc, SharedString, ToSharedString, VecModel};
 use std::cell::RefCell;
 use std::ops::AddAssign;
 use std::rc::Rc;
-use ::tts::Tts;
-use tts::Voice;
+use crate::tts_impl::{tts_speak};
 
 slint::include_modules!();
 fn main() {
     let app = App::new().unwrap();
 
-    let tts = Tts::default().unwrap();
-    app.set_voices(get_voices(&tts));
-
     let autocomplete_words = Rc::new(read_lines_from_file("common_english_words.txt"));
     let text_complete = TextCompletion::new(Rc::clone(&autocomplete_words));
 
     let app_weak = app.as_weak();
-    //let bluetooth_interface = Rc::new(BluetoothDevices::new());
+
     let bluetooth_interface = Rc::new(RefCell::new(BluetoothDevices::new()));
+
+    let selected_voice = Rc::new(RefCell::new(String::from("AnaNeural")));
+    let voices = vec!["AnaNeural", "AndrewNeural", "AriaNeural", "AvaNeural", "BrianNeural", "ChristopherNeural", "EmmaNeural", "EricNeural", "GuyNeural", "JennyNeural", "MichelleNeural", "RogerNeural", "SteffanNeural"];
 
 
     let mut speedy_spellers = SpeedySpeller::new(app_weak.clone().unwrap(), autocomplete_words);
@@ -80,11 +80,13 @@ fn main() {
 
     // Do Text To Speech
     app.on_tts({
-        let mut tts_clone = tts.clone();
+        let selected_voice_clone = Rc::clone(&selected_voice);
         move |text| {
-            tts_clone.speak(text.as_str(), true).unwrap();
+            tts_speak(text.to_string(), &selected_voice_clone.borrow()).unwrap();
         }
     });
+
+    app.set_voices(get_voices(voices));
 
     app.on_cursor_moved({
         let app_clone = app_weak.clone().unwrap();
@@ -130,10 +132,11 @@ fn main() {
     });
 
     app.on_set_voice({
-        let app_clone = app_weak.clone().unwrap();
-        let mut tts_clone = tts.clone();
+        let selected_voice_clone = Rc::clone(&selected_voice);
         move |string| {
-            tts_clone.set_voice(&get_voice_from_name(&string, &tts_clone, &app_clone)).unwrap();
+            let mut selected_voice_borrow = selected_voice_clone.borrow_mut();
+            let len = selected_voice_borrow.len();
+            selected_voice_borrow.replace_range(0..len, string.as_str());
         }
     });
     
@@ -221,27 +224,8 @@ fn replace_first_character(text: &SharedString, new_char: char) -> SharedString 
     SharedString::from(string)
 }
 
-fn get_voices(tts: &Tts) -> ModelRc<SharedString> {
-    let voices = tts.voices().unwrap();
-    let voice_names: Vec<SharedString> = voices.iter()
-        .filter(|voice| voice.name().starts_with("English (America)"))
-        .map(|voice| SharedString::from(voice.name()))
-        .collect();
-
-
-    let vec_model = VecModel::from(voice_names);
-    let rc_model = Rc::new(vec_model);
-    ModelRc::from(rc_model)
-}
-
-fn get_voice_from_name(name: &SharedString, tts: &Tts, app: &App) -> Voice {
-    let voices = app.get_voices();
-    let mut index = 0;
-    for (i, voice) in voices.iter().enumerate() {
-        if voice.eq(name) {
-            index = i;
-            break;
-        }
-    }
-    tts.voices().unwrap()[index].clone()
+fn get_voices(voices: Vec<&str>) -> ModelRc<SharedString> {
+    let shared_voices: Vec<SharedString> = voices.into_iter().map(SharedString::from).collect();
+    let vec_model = VecModel::from(shared_voices);
+    ModelRc::new(vec_model)
 }
