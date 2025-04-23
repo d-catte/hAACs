@@ -1,16 +1,16 @@
-mod word_model;
 mod bluetooth;
 mod speedy_spellers;
 mod tts_impl;
+mod word_model;
 
 use crate::bluetooth::BluetoothDevices;
 use crate::speedy_spellers::SpeedySpeller;
+use crate::tts_impl::tts_speak;
 use crate::word_model::{read_lines_from_file, TextCompletion};
-use slint::{Model, ModelRc, SharedString, ToSharedString, VecModel};
+use slint::{ModelRc, SharedString, ToSharedString, VecModel};
 use std::cell::RefCell;
 use std::ops::AddAssign;
 use std::rc::Rc;
-use crate::tts_impl::{tts_speak};
 
 slint::include_modules!();
 fn main() {
@@ -24,8 +24,21 @@ fn main() {
     let bluetooth_interface = Rc::new(RefCell::new(BluetoothDevices::new()));
 
     let selected_voice = Rc::new(RefCell::new(String::from("AnaNeural")));
-    let voices = vec!["AnaNeural", "AndrewNeural", "AriaNeural", "AvaNeural", "BrianNeural", "ChristopherNeural", "EmmaNeural", "EricNeural", "GuyNeural", "JennyNeural", "MichelleNeural", "RogerNeural", "SteffanNeural"];
-
+    let voices = vec![
+        "AnaNeural",
+        "AndrewNeural",
+        "AriaNeural",
+        "AvaNeural",
+        "BrianNeural",
+        "ChristopherNeural",
+        "EmmaNeural",
+        "EricNeural",
+        "GuyNeural",
+        "JennyNeural",
+        "MichelleNeural",
+        "RogerNeural",
+        "SteffanNeural",
+    ];
 
     let mut speedy_spellers = SpeedySpeller::new(app_weak.clone().unwrap(), autocomplete_words);
     speedy_spellers.register_callbacks();
@@ -139,7 +152,7 @@ fn main() {
             selected_voice_borrow.replace_range(0..len, string.as_str());
         }
     });
-    
+
     app.on_set_bluetooth_audio({
         let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
         move |device_str| {
@@ -150,7 +163,7 @@ fn main() {
                 }
                 if device.mac_address.to_shared_string().eq(&device_str) {
                     device.connect();
-                    break
+                    break;
                 }
                 if device.alias.to_shared_string().eq(&device_str) {
                     device.connect();
@@ -177,7 +190,6 @@ fn main() {
             app_clone.set_bluetooth_devices(ModelRc::from(rc_model));
         }
     });
-
 
     app.run().unwrap();
 }

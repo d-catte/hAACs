@@ -1,7 +1,7 @@
-use std::cmp::PartialEq;
-use std::process::Command;
 #[cfg(unix)]
 use bluez_async::{BluetoothError, BluetoothSession, DeviceId, MacAddress};
+use std::cmp::PartialEq;
+use std::process::Command;
 #[cfg(unix)]
 use std::sync::{Arc, Mutex};
 #[cfg(unix)]
@@ -22,10 +22,7 @@ impl BluetoothDevices {
     #[cfg(unix)]
     pub fn refresh_bluetooth(&mut self) {
         let devices_clone = Arc::clone(&self.devices);
-        let rt = Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
+        let rt = Builder::new_current_thread().enable_all().build().unwrap();
         rt.block_on(async move {
             let devices = locate_devices().await;
             if let Ok(devices_safe) = devices {
@@ -135,10 +132,7 @@ impl BluetoothDevice {
     /// Connects to a Bluetooth device
     #[cfg(unix)]
     pub fn connect_to_device(&self) {
-        let rt = Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
+        let rt = Builder::new_current_thread().enable_all().build().unwrap();
         rt.block_on(async move {
             if connect_device(&self.id).await.is_err() {
                 // TODO Error handling

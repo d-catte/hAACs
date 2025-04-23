@@ -1,9 +1,9 @@
+use crate::word_model::read_lines_from_file;
 use crate::App;
 use rand::prelude::SliceRandom;
 use rand::{rng, Rng};
 use slint::{ComponentHandle, Model, ModelRc, SharedString, VecModel};
 use std::rc::Rc;
-use crate::word_model::read_lines_from_file;
 
 pub struct SpeedySpeller {
     app: App,
@@ -43,22 +43,22 @@ impl SpeedySpeller {
             move |string| {
                 let mut current_letters = app_clone.get_alphabet_current_letters();
                 let word = app_clone.get_alphabet_current_word();
-                
+
                 let new_letters = format!("{}{}", current_letters, string).to_lowercase();
-                
+
                 if word.starts_with(&new_letters) {
                     current_letters.push_str(&string);
                     app_clone.set_alphabet_current_letters(current_letters);
                 }
-                
+
                 println!("{} -> {}", word, new_letters);
-                
+
                 if word.eq(&new_letters) {
                     app_clone.invoke_alphabet_match_win();
                 }
             }
         });
-        
+
         self.app.on_alphabet_match_win({
             let app_clone = app_weak.clone().unwrap();
             move || {
@@ -66,7 +66,7 @@ impl SpeedySpeller {
                 score += 1;
                 app_clone.set_alphabet_score(SharedString::from(&score.to_string()));
                 app_clone.set_alphabet_current_letters(SharedString::default());
-                
+
                 // Pick next match word
                 app_clone.set_alphabet_chars(scramble(app_clone.get_alphabet_chars()));
                 let diff = app_clone.get_alphabet_difficulty() as u8;
@@ -79,7 +79,7 @@ impl SpeedySpeller {
                 app_clone.set_alphabet_current_word(random_word(Rc::clone(&current_words)));
             }
         });
-        
+
         self.app.on_alphabet_game_over({
             let app_clone = app_weak.clone().unwrap();
             move || {

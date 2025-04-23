@@ -9,10 +9,11 @@ pub fn tts_speak(text: String, voice: &String) -> Result<(), Box<dyn std::error:
     println!("Running command: {}", command);
 
     let display = std::env::var("DISPLAY").unwrap_or_else(|_| String::from(":0.0"));
-    let runtime_dir = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| format!("/run/user/{}", unsafe { libc::getuid() }));
+    let runtime_dir = std::env::var("XDG_RUNTIME_DIR")
+        .unwrap_or_else(|_| format!("/run/user/{}", unsafe { libc::getuid() }));
 
     Command::new(&shell)
-        .args(&["-i", "-c", &command])
+        .args(["-i", "-c", &command])
         .env_clear()
         .env("TERM", "xterm-256color")
         .env("PATH", std::env::var("PATH")?)
@@ -22,13 +23,13 @@ pub fn tts_speak(text: String, voice: &String) -> Result<(), Box<dyn std::error:
         .env("DISPLAY", display)
         .env("XDG_RUNTIME_DIR", &runtime_dir)
         .env("PULSE_SERVER", format!("unix:{}/pulse/native", runtime_dir))
-        .env("DBUS_SESSION_BUS_ADDRESS", format!("unix:path={}/bus", runtime_dir))
-        .env("XDG_SESSION_TYPE", "x11")  // or "wayland" if you're using Wayland
+        .env(
+            "DBUS_SESSION_BUS_ADDRESS",
+            format!("unix:path={}/bus", runtime_dir),
+        )
+        .env("XDG_SESSION_TYPE", "x11") // or "wayland" if you're using Wayland
         .spawn()?
         .wait()?;
 
     Ok(())
 }
-
-
-
