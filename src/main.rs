@@ -3,13 +3,14 @@ mod bluetooth;
 mod speedy_spellers;
 
 use crate::bluetooth::BluetoothDevices;
+use crate::speedy_spellers::SpeedySpeller;
 use crate::word_model::{read_lines_from_file, TextCompletion};
-use ::tts::Tts;
-use slint::{Model, ModelRc, SharedString, VecModel};
+use slint::{Model, ModelRc, SharedString, ToSharedString, VecModel};
+use std::cell::RefCell;
 use std::ops::AddAssign;
 use std::rc::Rc;
+use ::tts::Tts;
 use tts::Voice;
-use crate::speedy_spellers::SpeedySpeller;
 
 slint::include_modules!();
 fn main() {
@@ -22,8 +23,10 @@ fn main() {
     let text_complete = TextCompletion::new(Rc::clone(&autocomplete_words));
 
     let app_weak = app.as_weak();
-    let bluetooth_interface = Rc::new(BluetoothDevices::new());
-    
+    //let bluetooth_interface = Rc::new(BluetoothDevices::new());
+    let bluetooth_interface = Rc::new(RefCell::new(BluetoothDevices::new()));
+
+
     let mut speedy_spellers = SpeedySpeller::new(app_weak.clone().unwrap(), autocomplete_words);
     speedy_spellers.register_callbacks();
 
@@ -135,30 +138,43 @@ fn main() {
     });
     
     app.on_set_bluetooth_audio({
-        let app_clone = app_weak.clone().unwrap();
         let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
-        move |device| {
-            let devices = app_clone.get_bluetooth_devices();
-            let mut index = 0;
-            for (i, str) in devices.iter().enumerate() {
-                if str.eq(&device) {
-                    index = i;
+        move |device_str| {
+            for device in bluetooth_interface.borrow().devices.lock().unwrap().iter() {
+                if device.get_device_name().to_shared_string().eq(&device_str) {
+                    device.connect();
+                    break;
+                }
+                if device.mac_address.to_shared_string().eq(&device_str) {
+                    device.connect();
+                    break
+                }
+                if device.alias.to_shared_string().eq(&device_str) {
+                    device.connect();
                     break;
                 }
             }
-            let bt_device = &bluetooth_interface.devices[index];
-            bt_device.connect();
         }
     });
 
     app.on_refresh_bluetooth({
-        let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
+        let bluetooth_interface = Rc::clone(&bluetooth_interface);
+        let app_clone = app_weak.clone().unwrap();
         move || {
             #[cfg(unix)]
-            bluetooth_interface.refresh_bluetooth();
+            bluetooth_interface.borrow_mut().refresh_bluetooth();
             // TODO Refresh bluetooth name list
+            let mut device_names: Vec<SharedString> = Vec::new();
+            device_names.push(SharedString::from("Speakers"));
+            for device in bluetooth_interface.borrow().devices.lock().unwrap().iter() {
+                device_names.push(SharedString::from(device.get_device_name()));
+            }
+            let vec_model = VecModel::from(device_names);
+            let rc_model = Rc::new(vec_model);
+            app_clone.set_bluetooth_devices(ModelRc::from(rc_model));
         }
     });
+
 
     app.run().unwrap();
 }
@@ -207,7 +223,12 @@ fn replace_first_character(text: &SharedString, new_char: char) -> SharedString 
 
 fn get_voices(tts: &Tts) -> ModelRc<SharedString> {
     let voices = tts.voices().unwrap();
-    let voice_names: Vec<SharedString> = voices.iter().map(|voice| SharedString::from(voice.name())).collect();
+    let voice_names: Vec<SharedString> = voices.iter()
+        .filter(|voice| voice.name().starts_with("English (America)"))
+        .map(|voice| SharedString::from(voice.name()))
+        .collect();
+
+
     let vec_model = VecModel::from(voice_names);
     let rc_model = Rc::new(vec_model);
     ModelRc::from(rc_model)

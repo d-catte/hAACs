@@ -14,7 +14,7 @@ use tokio::time::sleep;
 impl BluetoothDevices {
     pub fn new() -> Self {
         Self {
-            devices: Vec::new(),
+            devices: Arc::new(Mutex::new(Vec::new())),
         }
     }
 
@@ -33,19 +33,6 @@ impl BluetoothDevices {
                 *locked = devices_safe;
             }
         });
-    }
-    
-    /// Gets the name of the device at a specific index
-    #[cfg(unix)]
-    pub fn get_device_name(&self, index: usize) -> &String {
-        let device = &self.devices[index];
-        if &device.name != "Unknown" {
-            &device.name
-        } else if &device.alias != "None" {
-            &device.alias
-        } else {
-            &device.mac_address.to_string()
-        }
     }
 }
 
@@ -67,6 +54,8 @@ async fn locate_devices() -> Result<Vec<BluetoothDevice>, BluetoothError> {
             name: device_info.name.unwrap_or("Unknown".to_string()),
             paired: device_info.paired,
             connected: device_info.connected,
+            // TODO Figure out what type it is
+            bl_type: BluetoothDeviceType::AUDIO,
             id: device_info.id,
             alias: device_info.alias.unwrap_or("None".to_string()),
             mac_address: device_info.mac_address,
@@ -95,6 +84,7 @@ async fn connect_device(device_id: &DeviceId) -> Result<(), BluetoothError> {
 /// id: The device Bluetooth id
 /// alias: The device's nickname
 /// mac_address: The MAC of the device
+#[derive(Clone)]
 pub struct BluetoothDevice {
     pub(crate) name: String,
     pub(crate) paired: bool,
@@ -114,6 +104,18 @@ impl BluetoothDevice {
         if self.bl_type == BluetoothDeviceType::AUDIO {
             #[cfg(unix)]
             self.switch_audio_device();
+        }
+    }
+
+    /// Gets the name of the device at a specific index
+    #[cfg(unix)]
+    pub fn get_device_name(&self) -> String {
+        if &self.name != "Unknown" {
+            self.name.clone()
+        } else if &self.alias != "None" {
+            self.alias.clone()
+        } else {
+            self.mac_address.to_string()
         }
     }
 
@@ -146,10 +148,10 @@ impl BluetoothDevice {
 }
 
 pub struct BluetoothDevices {
-    pub devices: Vec<BluetoothDevice>,
+    pub devices: Arc<Mutex<Vec<BluetoothDevice>>>,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 pub enum BluetoothDeviceType {
     INPUT,
     AUDIO,
