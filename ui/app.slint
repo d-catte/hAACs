@@ -1,6 +1,6 @@
 import { MainMenu } from "main_menu.slint";
 import { SettingsMenu } from "settings_menu.slint";
-import { AlphabetGame } from "games/alphabet_game/alphabet_game.slint";
+import { AlphabetGame, LetterGameData } from "games/alphabet_game/alphabet_game.slint";
 import { AACMenu } from "aac_menu.slint";
 import { KeyboardCallback } from "callback/keyboard_callbacks.slint";
 import { AACCallback } from "callback/aac_callbacks.slint";
@@ -80,4 +80,16 @@ export component App inherits Window {
     in-out property <string> text_value <=> AACCallback.text;
     in-out property <[string]> voices <=> AACCallback.voices;
     in-out property <[string]> bluetooth_devices <=> SettingsData.bluetooth_devices;
+
+    // Alphabet Game
+    in-out property <[string]> alphabet_chars <=> LetterGameData.chars;
+    in-out property <bool> alphabet_game_started <=> LetterGameData.game_started;
+    in-out property <string> alphabet_current_word <=> LetterGameData.current_word;
+    in-out property <string> alphabet_current_letters <=> LetterGameData.current_letters;
+    in-out property <int> alphabet_difficulty <=> LetterGameData.difficulty;
+    in-out property <string> alphabet_score <=> LetterGameData.score;
+    pure callback alphabet_game_start <=> LetterGameData.game_start;
+    pure callback alphabet_letter_pressed <=> LetterGameData.letter_pressed;
+    pure callback alphabet_match_win <=> LetterGameData.match_win;
+    pure callback alphabet_game_over <=> LetterGameData.game_over;
 }

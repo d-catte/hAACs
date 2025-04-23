@@ -1,13 +1,15 @@
 mod word_model;
 mod bluetooth;
+mod speedy_spellers;
 
 use crate::bluetooth::BluetoothDevices;
-use crate::word_model::TextCompletion;
+use crate::word_model::{read_lines_from_file, TextCompletion};
 use ::tts::Tts;
 use slint::{Model, ModelRc, SharedString, VecModel};
 use std::ops::AddAssign;
 use std::rc::Rc;
 use tts::Voice;
+use crate::speedy_spellers::SpeedySpeller;
 
 slint::include_modules!();
 fn main() {
@@ -16,10 +18,14 @@ fn main() {
     let tts = Tts::default().unwrap();
     app.set_voices(get_voices(&tts));
 
-    let text_complete = TextCompletion::new();
+    let autocomplete_words = Rc::new(read_lines_from_file("common_english_words.txt"));
+    let text_complete = TextCompletion::new(Rc::clone(&autocomplete_words));
 
     let app_weak = app.as_weak();
     let bluetooth_interface = Rc::new(BluetoothDevices::new());
+    
+    let mut speedy_spellers = SpeedySpeller::new(app_weak.clone().unwrap(), autocomplete_words);
+    speedy_spellers.register_callbacks();
 
     // Type Character
     app.on_character_typed({
@@ -150,6 +156,7 @@ fn main() {
         move || {
             #[cfg(unix)]
             bluetooth_interface.refresh_bluetooth();
+            // TODO Refresh bluetooth name list
         }
     });
 

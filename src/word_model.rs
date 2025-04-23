@@ -5,15 +5,15 @@ use std::fs::File;
 use std::io;
 use std::io::BufRead;
 use std::path::Path;
+use std::rc::Rc;
 
 pub struct TextCompletion {
-    words: Vec<String>,
+    pub words: Rc<Vec<String>>,
     matcher: SkimMatcherV2,
 }
 
 impl TextCompletion {
-    pub fn new() -> TextCompletion {
-        let words = read_lines_from_file("common_english_words.txt");
+    pub fn new(words: Rc<Vec<String>>) -> TextCompletion {
         TextCompletion {
             words,
             matcher: SkimMatcherV2::default().ignore_case(),
@@ -28,7 +28,7 @@ impl TextCompletion {
         ];
         let mut index = 0;
         for iter in 0..2 {
-            for word in &self.words {
+            for word in Rc::clone(&self.words).iter() {
                 if index == 3 {
                     return suggestions;
                 }
@@ -46,10 +46,14 @@ impl TextCompletion {
     }
 }
 
-fn read_lines_from_file(file_path: &str) -> Vec<String> {
+pub fn read_lines_from_file(file_path: &str) -> Vec<String> {
     let path = Path::new(file_path);
     let file = File::open(path).expect("File not found");
     let reader = io::BufReader::new(file);
 
-    reader.lines().map_while(Result::ok).collect()
+    reader
+        .lines()
+        .map_while(Result::ok)
+        .map(|line| line.split_whitespace().collect::<String>())
+        .collect()
 }
