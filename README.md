@@ -5,5 +5,3 @@ This software will feature TTS, an easy to use on-screen keyboard, and a game lo
 
 https://github.com/rany2/edge-tts?tab=readme-ov-file 
 `pipx install edge-tts`
-`sudo apt-get install mpv`
-`edge-playback --text "Hello World!`

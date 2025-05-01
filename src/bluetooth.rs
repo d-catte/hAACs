@@ -2,7 +2,6 @@
 use bluez_async::{BluetoothError, BluetoothSession, DeviceId, MacAddress};
 use std::cmp::PartialEq;
 use std::process::Command;
-#[cfg(unix)]
 use std::sync::{Arc, Mutex};
 #[cfg(unix)]
 use std::time::Duration;
