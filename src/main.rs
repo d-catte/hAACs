@@ -4,12 +4,17 @@ mod tts_impl;
 mod wifi;
 mod word_model;
 
+#[cfg(unix)]
 use crate::bluetooth::BluetoothDevices;
 use crate::speedy_spellers::SpeedySpeller;
+#[cfg(unix)]
 use crate::tts_impl::tts_speak;
 use crate::wifi::scan_wifi;
 use crate::word_model::{read_lines_from_file, read_lines_from_file_keep_spaces, TextCompletion};
+#[cfg(unix)]
 use slint::{ModelRc, SharedString, ToSharedString, VecModel};
+#[cfg(not(unix))]
+use slint::{ModelRc, SharedString, VecModel};
 use std::cell::RefCell;
 use std::ops::AddAssign;
 use std::rc::Rc;
@@ -23,6 +28,7 @@ fn main() {
 
     let app_weak = app.as_weak();
 
+    #[cfg(unix)]
     let bluetooth_interface = Rc::new(RefCell::new(BluetoothDevices::new()));
 
     let selected_voice = Rc::new(RefCell::new(String::from("AnaNeural")));
@@ -119,6 +125,7 @@ fn main() {
         }
     });
 
+    #[cfg(unix)]
     app.global::<SettingsData>().on_connect_to_wifi({
         move |username, password| {
             // TODO Connect to WiFi
@@ -126,6 +133,7 @@ fn main() {
     });
 
     // Do Text To Speech
+    #[cfg(unix)]
     app.global::<AACCallback>().on_tts({
         let selected_voice_clone = Rc::clone(&selected_voice);
         let app_clone = app_weak.clone().unwrap();
@@ -217,10 +225,12 @@ fn main() {
     });
 
     app.global::<SettingsData>().on_set_bluetooth_audio_device({
+        #[cfg(unix)]
         let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
         move |device_str| {
             if device_str.eq("Speaker") {
                 // TODO Disconnect BT and switch to GPIO output
+                #[allow(clippy::needless_return)]
                 return;
             }
             #[cfg(unix)]
@@ -242,13 +252,14 @@ fn main() {
     });
 
     app.global::<SettingsData>().on_refresh_bluetooth({
+        #[cfg(unix)]
         let bluetooth_interface = Rc::clone(&bluetooth_interface);
         let app_clone = app_weak.clone().unwrap();
         move || {
             #[cfg(unix)]
             bluetooth_interface.borrow_mut().refresh_bluetooth();
-            let mut device_names: Vec<SharedString> = Vec::new();
-            device_names.push(SharedString::from("Speakers"));
+            #[allow(unused_mut)]
+            let mut device_names: Vec<SharedString> = vec![SharedString::from("Speakers")];
             #[cfg(unix)]
             for device in bluetooth_interface.borrow().devices.lock().unwrap().iter() {
                 device_names.push(SharedString::from(device.get_device_name()));
@@ -313,9 +324,5 @@ fn vec_to_rc(voices: Vec<&str>) -> ModelRc<SharedString> {
 }
 
 pub fn check_internet_connection() -> bool {
-    // Attempt to connect to Google's public DNS server
-    match std::net::TcpStream::connect("8.8.8.8:53") {
-        Ok(_) => true,   // Connection successful
-        Err(_) => false, // Connection failed
-    }
+    std::net::TcpStream::connect("8.8.8.8:53").is_ok()
 }

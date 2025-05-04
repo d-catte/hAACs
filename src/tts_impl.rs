@@ -1,13 +1,20 @@
+#[cfg(unix)]
 use crate::check_internet_connection;
+#[cfg(unix)]
 use rodio::{Decoder, OutputStream, Sink};
+#[cfg(unix)]
 use std::io::BufReader;
 #[cfg(unix)]
 use std::process::Command;
+#[cfg(unix)]
 use std::sync::atomic::AtomicBool;
+#[cfg(unix)]
 use std::thread;
 
+#[cfg(unix)]
 static THREAD_LOCK: AtomicBool = AtomicBool::new(false);
 
+#[cfg(unix)]
 pub fn tts_speak(
     text: String,
     voice: &String,
@@ -37,11 +44,10 @@ pub fn tts_speak(
         );
 
         //let display = std::env::var("DISPLAY").unwrap_or_else(|_| String::from(":0.0"));
-        #[cfg(unix)]
+
         let runtime_dir = std::env::var("XDG_RUNTIME_DIR")
             .unwrap_or_else(|_| format!("/run/user/{}", unsafe { libc::getuid() }));
 
-        #[cfg(unix)]
         Command::new(&shell)
             .args(["-i", "-c", &command])
             .env_clear()
@@ -67,11 +73,9 @@ pub fn tts_speak(
   ./piper --model en_US-ryan-low.onnx --output_file /tmp/output.wav"
         );
 
-        #[cfg(unix)]
         let runtime_dir = std::env::var("XDG_RUNTIME_DIR")
             .unwrap_or_else(|_| format!("/run/user/{}", unsafe { libc::getuid() }));
 
-        #[cfg(unix)]
         Command::new(&shell)
             .args(["-i", "-c", &command])
             .env_clear()
@@ -93,7 +97,6 @@ pub fn tts_speak(
     }
 
     // Play file
-    #[cfg(unix)]
     thread::spawn(move || {
         THREAD_LOCK.store(true, std::sync::atomic::Ordering::Relaxed);
         // Play file

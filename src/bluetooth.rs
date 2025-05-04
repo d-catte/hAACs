@@ -1,7 +1,10 @@
 #[cfg(unix)]
 use bluez_async::{BluetoothError, BluetoothSession, DeviceId, MacAddress};
+#[cfg(unix)]
 use std::cmp::PartialEq;
+#[cfg(unix)]
 use std::process::Command;
+#[cfg(unix)]
 use std::sync::{Arc, Mutex};
 #[cfg(unix)]
 use std::time::Duration;
@@ -10,6 +13,7 @@ use tokio::runtime::Builder;
 #[cfg(unix)]
 use tokio::time::sleep;
 
+#[cfg(unix)]
 impl BluetoothDevices {
     pub fn new() -> Self {
         Self {
@@ -18,7 +22,6 @@ impl BluetoothDevices {
     }
 
     /// Searches for Bluetooth devices to pair
-    #[cfg(unix)]
     pub fn refresh_bluetooth(&mut self) {
         let devices_clone = Arc::clone(&self.devices);
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
@@ -81,6 +84,7 @@ async fn connect_device(device_id: &DeviceId) -> Result<(), BluetoothError> {
 /// alias: The device's nickname
 /// mac_address: The MAC of the device
 #[derive(Clone)]
+#[cfg(unix)]
 pub struct BluetoothDevice {
     pub(crate) name: String,
     pub(crate) paired: bool,
@@ -93,18 +97,16 @@ pub struct BluetoothDevice {
     pub mac_address: MacAddress,
 }
 
+#[cfg(unix)]
 impl BluetoothDevice {
     pub fn connect(&self) {
-        #[cfg(unix)]
         self.connect_to_device();
         if self.bl_type == BluetoothDeviceType::AUDIO {
-            #[cfg(unix)]
             self.switch_audio_device();
         }
     }
 
     /// Gets the name of the device at a specific index
-    #[cfg(unix)]
     pub fn get_device_name(&self) -> String {
         if &self.name != "Unknown" {
             self.name.clone()
@@ -116,7 +118,6 @@ impl BluetoothDevice {
     }
 
     /// Switches the current audio device to the inputted BluetoothDevice
-    #[cfg(unix)]
     pub fn switch_audio_device(&self) {
         let device_id = self.id.to_string();
         let command = format!("pw-cli set-default {}", device_id);
@@ -129,7 +130,6 @@ impl BluetoothDevice {
     }
 
     /// Connects to a Bluetooth device
-    #[cfg(unix)]
     pub fn connect_to_device(&self) {
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
         rt.block_on(async move {
@@ -140,10 +140,12 @@ impl BluetoothDevice {
     }
 }
 
+#[cfg(unix)]
 pub struct BluetoothDevices {
     pub devices: Arc<Mutex<Vec<BluetoothDevice>>>,
 }
 
+#[cfg(unix)]
 #[derive(PartialEq, Clone)]
 pub enum BluetoothDeviceType {
     INPUT,
