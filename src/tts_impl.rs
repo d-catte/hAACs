@@ -20,9 +20,11 @@ pub fn tts_speak(text: String, voice: &String) -> Result<(), Box<dyn std::error:
     println!("Running command: {}", command);
 
     //let display = std::env::var("DISPLAY").unwrap_or_else(|_| String::from(":0.0"));
+    #[cfg(unix)]
     let runtime_dir = std::env::var("XDG_RUNTIME_DIR")
         .unwrap_or_else(|_| format!("/run/user/{}", unsafe { libc::getuid() }));
 
+    #[cfg(unix)]
     Command::new(&shell)
         .args(["-i", "-c", &command])
         .env_clear()

@@ -76,7 +76,9 @@ impl SpeedySpeller {
                     2 => Rc::clone(&words_level_2),
                     _ => Rc::clone(&words_level_3),
                 };
-                app_clone.set_alphabet_current_word(random_word(Rc::clone(&current_words)));
+                let new_word = random_word(Rc::clone(&current_words));
+                app_clone.set_alphabet_current_word(new_word.clone());
+                app_clone.invoke_tts(new_word);
             }
         });
 

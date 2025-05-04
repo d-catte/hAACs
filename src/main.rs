@@ -156,6 +156,7 @@ fn main() {
     app.on_set_bluetooth_audio({
         let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
         move |device_str| {
+            #[cfg(unix)]
             for device in bluetooth_interface.borrow().devices.lock().unwrap().iter() {
                 if device.get_device_name().to_shared_string().eq(&device_str) {
                     device.connect();
@@ -182,6 +183,7 @@ fn main() {
             // TODO Refresh bluetooth name list
             let mut device_names: Vec<SharedString> = Vec::new();
             device_names.push(SharedString::from("Speakers"));
+            #[cfg(unix)]
             for device in bluetooth_interface.borrow().devices.lock().unwrap().iter() {
                 device_names.push(SharedString::from(device.get_device_name()));
             }
