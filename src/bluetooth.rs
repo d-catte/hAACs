@@ -87,8 +87,6 @@ async fn connect_device(device_id: &DeviceId) -> Result<(), BluetoothError> {
 #[cfg(unix)]
 pub struct BluetoothDevice {
     pub(crate) name: String,
-    pub(crate) paired: bool,
-    pub connected: bool,
     pub bl_type: BluetoothDeviceType,
     #[cfg(unix)]
     pub id: DeviceId,
