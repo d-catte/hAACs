@@ -33,7 +33,9 @@ impl SpeedySpeller {
             let app_clone = app_weak.clone().unwrap();
 
             move || {
-                app_clone.global::<LetterGameData>().set_score(SharedString::from("-1"));
+                app_clone
+                    .global::<LetterGameData>()
+                    .set_score(SharedString::from("-1"));
                 app_clone.global::<LetterGameData>().invoke_match_win();
             }
         });
@@ -41,14 +43,17 @@ impl SpeedySpeller {
         self.app.global::<LetterGameData>().on_letter_pressed({
             let app_clone = app_weak.clone().unwrap();
             move |string| {
-                let mut current_letters = app_clone.global::<LetterGameData>().get_current_letters();
+                let mut current_letters =
+                    app_clone.global::<LetterGameData>().get_current_letters();
                 let word = app_clone.global::<LetterGameData>().get_current_word();
 
                 let new_letters = format!("{}{}", current_letters, string).to_lowercase();
 
                 if word.starts_with(&new_letters) {
                     current_letters.push_str(&string);
-                    app_clone.global::<LetterGameData>().set_current_letters(current_letters);
+                    app_clone
+                        .global::<LetterGameData>()
+                        .set_current_letters(current_letters);
                 }
 
                 println!("{} -> {}", word, new_letters);
@@ -62,13 +67,23 @@ impl SpeedySpeller {
         self.app.global::<LetterGameData>().on_match_win({
             let app_clone = app_weak.clone().unwrap();
             move || {
-                let mut score: i8 = app_clone.global::<LetterGameData>().get_score().parse::<i8>().unwrap();
+                let mut score: i8 = app_clone
+                    .global::<LetterGameData>()
+                    .get_score()
+                    .parse::<i8>()
+                    .unwrap();
                 score += 1;
-                app_clone.global::<LetterGameData>().set_score(SharedString::from(&score.to_string()));
-                app_clone.global::<LetterGameData>().set_current_letters(SharedString::default());
+                app_clone
+                    .global::<LetterGameData>()
+                    .set_score(SharedString::from(&score.to_string()));
+                app_clone
+                    .global::<LetterGameData>()
+                    .set_current_letters(SharedString::default());
 
                 // Pick next match word
-                app_clone.global::<LetterGameData>().set_chars(scramble(app_clone.global::<LetterGameData>().get_chars()));
+                app_clone
+                    .global::<LetterGameData>()
+                    .set_chars(scramble(app_clone.global::<LetterGameData>().get_chars()));
                 let diff = app_clone.global::<LetterGameData>().get_difficulty() as u8;
                 println!("{}", diff);
                 let current_words = match diff {
@@ -77,7 +92,9 @@ impl SpeedySpeller {
                     _ => Rc::clone(&words_level_3),
                 };
                 let new_word = random_word(Rc::clone(&current_words));
-                app_clone.global::<LetterGameData>().set_current_word(new_word.clone());
+                app_clone
+                    .global::<LetterGameData>()
+                    .set_current_word(new_word.clone());
                 app_clone.global::<AACCallback>().invoke_tts(new_word);
             }
         });

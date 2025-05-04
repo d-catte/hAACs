@@ -1,18 +1,18 @@
 mod bluetooth;
 mod speedy_spellers;
 mod tts_impl;
-mod word_model;
 mod wifi;
+mod word_model;
 
 use crate::bluetooth::BluetoothDevices;
 use crate::speedy_spellers::SpeedySpeller;
 use crate::tts_impl::tts_speak;
+use crate::wifi::scan_wifi;
 use crate::word_model::{read_lines_from_file, read_lines_from_file_keep_spaces, TextCompletion};
 use slint::{ModelRc, SharedString, ToSharedString, VecModel};
 use std::cell::RefCell;
 use std::ops::AddAssign;
 use std::rc::Rc;
-use crate::wifi::scan_wifi;
 
 slint::include_modules!();
 fn main() {
@@ -56,52 +56,69 @@ fn main() {
                     if text.is_empty() {
                         return;
                     }
-                    app_clone.global::<AACCallback>().set_text(remove_character_at_index(&text, index as usize));
-                    app_clone.global::<AACCallback>().set_cursor_index(index - 1);
+                    app_clone
+                        .global::<AACCallback>()
+                        .set_text(remove_character_at_index(&text, index as usize));
+                    app_clone
+                        .global::<AACCallback>()
+                        .set_cursor_index(index - 1);
                 }
                 "Space" => {
-                    app_clone.global::<AACCallback>().set_text(insert_character_at_index(&text, index as usize, ' '));
-                    app_clone.global::<AACCallback>().set_cursor_index(index + 1);
+                    app_clone
+                        .global::<AACCallback>()
+                        .set_text(insert_character_at_index(&text, index as usize, ' '));
+                    app_clone
+                        .global::<AACCallback>()
+                        .set_cursor_index(index + 1);
                 }
                 _ => {
                     if should_be_capital(&text) {
-                        app_clone.global::<AACCallback>().set_text(insert_character_at_index(
-                            &text,
-                            index as usize,
-                            character.chars().next().unwrap(),
-                        ));
+                        app_clone
+                            .global::<AACCallback>()
+                            .set_text(insert_character_at_index(
+                                &text,
+                                index as usize,
+                                character.chars().next().unwrap(),
+                            ));
                     } else {
                         let mut char = character.chars().next().unwrap();
                         if char >= 'A' || char <= 'Z' {
                             char = char.to_ascii_lowercase();
                         }
-                        app_clone.global::<AACCallback>().set_text(insert_character_at_index(
-                            &text,
-                            index as usize,
-                            char,
-                        ));
+                        app_clone
+                            .global::<AACCallback>()
+                            .set_text(insert_character_at_index(&text, index as usize, char));
                     }
-                    app_clone.global::<AACCallback>().set_cursor_index(index + 1);
+                    app_clone
+                        .global::<AACCallback>()
+                        .set_cursor_index(index + 1);
                 }
             }
             // Suggest new word
-            app_clone.global::<KeyboardCallback>().set_auto_complete(ModelRc::from(
-                text_complete.suggest(get_last_word(&app_clone.global::<AACCallback>().get_text())),
-            ));
+            app_clone
+                .global::<KeyboardCallback>()
+                .set_auto_complete(ModelRc::from(
+                    text_complete
+                        .suggest(get_last_word(&app_clone.global::<AACCallback>().get_text())),
+                ));
 
             app_clone.global::<AACCallback>().invoke_cursor_moved();
         }
     });
-    
+
     // Recheck internet connection
     app.global::<SettingsData>().on_refresh_internet({
         let app_clone = app_weak.clone().unwrap();
         move || {
-            app_clone.global::<SettingsData>().set_online(check_internet_connection());
-            app_clone.global::<SettingsData>().set_wifi_names(scan_wifi());
+            app_clone
+                .global::<SettingsData>()
+                .set_online(check_internet_connection());
+            app_clone
+                .global::<SettingsData>()
+                .set_wifi_names(scan_wifi());
         }
     });
-    
+
     app.global::<SettingsData>().on_connect_to_wifi({
         move |username, password| {
             // TODO Connect to WiFi
@@ -113,22 +130,34 @@ fn main() {
         let selected_voice_clone = Rc::clone(&selected_voice);
         let app_clone = app_weak.clone().unwrap();
         move |text| {
-            tts_speak(text.to_string(), &selected_voice_clone.borrow(), app_clone.global::<SettingsData>().get_volume() as i8).unwrap();
+            tts_speak(
+                text.to_string(),
+                &selected_voice_clone.borrow(),
+                app_clone.global::<SettingsData>().get_volume() as i8,
+            )
+            .unwrap();
         }
     });
 
     app.global::<AACCallback>().set_voices(vec_to_rc(voices));
     let quick_button_options = read_lines_from_file_keep_spaces("quick_buttons.txt");
-    let quick_button_options_model: VecModel<SharedString> = VecModel::from(quick_button_options.into_iter().map(SharedString::from).collect::<Vec<SharedString>>());
-    app.global::<SettingsData>().set_quick_button_options(ModelRc::from(Rc::new(quick_button_options_model)));
+    let quick_button_options_model: VecModel<SharedString> = VecModel::from(
+        quick_button_options
+            .into_iter()
+            .map(SharedString::from)
+            .collect::<Vec<SharedString>>(),
+    );
+    app.global::<SettingsData>()
+        .set_quick_button_options(ModelRc::from(Rc::new(quick_button_options_model)));
 
     #[cfg(unix)]
     app.global::<SettingsData>().set_production_env(true);
     #[cfg(not(unix))]
     app.global::<SettingsData>().set_production_env(false);
 
-    app.global::<SettingsData>().set_online(check_internet_connection());
-    
+    app.global::<SettingsData>()
+        .set_online(check_internet_connection());
+
     app.global::<SettingsData>().set_wifi_names(scan_wifi());
 
     app.global::<AACCallback>().on_cursor_moved({
@@ -137,16 +166,12 @@ fn main() {
             let text = app_clone.global::<AACCallback>().get_text();
             let index = app_clone.global::<AACCallback>().get_cursor_index();
 
-            app_clone.global::<AACCallback>().set_visible_cursor_text(insert_character_at_index(
-                &text,
-                index as usize,
-                '|',
-            ));
-            app_clone.global::<AACCallback>().set_invisible_cursor_text(insert_character_at_index(
-                &text,
-                index as usize,
-                ' ',
-            ));
+            app_clone
+                .global::<AACCallback>()
+                .set_visible_cursor_text(insert_character_at_index(&text, index as usize, '|'));
+            app_clone
+                .global::<AACCallback>()
+                .set_invisible_cursor_text(insert_character_at_index(&text, index as usize, ' '));
         }
     });
 
@@ -165,12 +190,20 @@ fn main() {
             text.add_assign(string.as_str());
             text.add_assign(" ");
             let new_index = text.len();
-            app_clone.global::<AACCallback>().set_cursor_index(new_index as i32);
+            app_clone
+                .global::<AACCallback>()
+                .set_cursor_index(new_index as i32);
             app_clone.global::<AACCallback>().set_text(text.clone());
-            app_clone.global::<AACCallback>().set_invisible_cursor_text(text.clone());
+            app_clone
+                .global::<AACCallback>()
+                .set_invisible_cursor_text(text.clone());
             text.add_assign("|");
-            app_clone.global::<AACCallback>().set_visible_cursor_text(text.clone());
-            app_clone.global::<KeyboardCallback>().set_auto_complete(ModelRc::default());
+            app_clone
+                .global::<AACCallback>()
+                .set_visible_cursor_text(text.clone());
+            app_clone
+                .global::<KeyboardCallback>()
+                .set_auto_complete(ModelRc::default());
         }
     });
 
@@ -222,7 +255,9 @@ fn main() {
             }
             let vec_model = VecModel::from(device_names);
             let rc_model = Rc::new(vec_model);
-            app_clone.global::<SettingsData>().set_bluetooth_devices(ModelRc::from(rc_model));
+            app_clone
+                .global::<SettingsData>()
+                .set_bluetooth_devices(ModelRc::from(rc_model));
         }
     });
 
@@ -280,7 +315,7 @@ fn vec_to_rc(voices: Vec<&str>) -> ModelRc<SharedString> {
 pub fn check_internet_connection() -> bool {
     // Attempt to connect to Google's public DNS server
     match std::net::TcpStream::connect("8.8.8.8:53") {
-        Ok(_) => true,  // Connection successful
+        Ok(_) => true,   // Connection successful
         Err(_) => false, // Connection failed
     }
 }

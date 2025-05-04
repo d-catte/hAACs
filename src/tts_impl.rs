@@ -1,23 +1,27 @@
+use crate::check_internet_connection;
+use rodio::{Decoder, OutputStream, Sink};
 use std::io::BufReader;
 #[cfg(unix)]
 use std::process::Command;
 use std::sync::atomic::AtomicBool;
 use std::thread;
-use rodio::{Decoder, OutputStream, Sink};
-use crate::check_internet_connection;
 
 static THREAD_LOCK: AtomicBool = AtomicBool::new(false);
 
-pub fn tts_speak(text: String, voice: &String, volume: i8) -> Result<(), Box<dyn std::error::Error>> {
+pub fn tts_speak(
+    text: String,
+    voice: &String,
+    volume: i8,
+) -> Result<(), Box<dyn std::error::Error>> {
     // Check if the thread is already running
     if THREAD_LOCK.load(std::sync::atomic::Ordering::Relaxed) {
         return Ok(());
     }
-    
+
     let shell = std::env::var("SHELL").unwrap_or_else(|_| String::from("/bin/bash"));
-    
+
     let file_extension;
-    
+
     if check_internet_connection() {
         file_extension = "mp3";
         let voice_final = format!("en-US-{}", voice);
@@ -27,7 +31,10 @@ pub fn tts_speak(text: String, voice: &String, volume: i8) -> Result<(), Box<dyn
         } else {
             volume - 50
         };
-        let command = format!("edge-tts -v {} --text \"{}\" --volume={}% --write-media /tmp/output.mp3", voice_final, text, corrected_volume);
+        let command = format!(
+            "edge-tts -v {} --text \"{}\" --volume={}% --write-media /tmp/output.mp3",
+            voice_final, text, corrected_volume
+        );
 
         //let display = std::env::var("DISPLAY").unwrap_or_else(|_| String::from(":0.0"));
         #[cfg(unix)]
@@ -52,12 +59,14 @@ pub fn tts_speak(text: String, voice: &String, volume: i8) -> Result<(), Box<dyn
             )
             .env("XDG_SESSION_TYPE", "wayland")
             .spawn()?
-            .wait()?;   
+            .wait()?;
     } else {
         file_extension = "wav";
-        let command = format!("echo '{text}' | \
-  ./piper --model en_US-ryan-low.onnx --output_file /tmp/output.wav");
-        
+        let command = format!(
+            "echo '{text}' | \
+  ./piper --model en_US-ryan-low.onnx --output_file /tmp/output.wav"
+        );
+
         #[cfg(unix)]
         let runtime_dir = std::env::var("XDG_RUNTIME_DIR")
             .unwrap_or_else(|_| format!("/run/user/{}", unsafe { libc::getuid() }));
@@ -82,7 +91,7 @@ pub fn tts_speak(text: String, voice: &String, volume: i8) -> Result<(), Box<dyn
             .spawn()?
             .wait()?;
     }
-    
+
     // Play file
     #[cfg(unix)]
     thread::spawn(move || {

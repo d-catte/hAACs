@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use slint::{ModelRc, SharedString, VecModel};
+use std::collections::HashSet;
 use std::rc::Rc;
 
 pub fn scan_wifi() -> ModelRc<SharedString> {
@@ -13,9 +13,12 @@ pub fn scan_wifi() -> ModelRc<SharedString> {
 
         unique_wifi_list.into_iter().collect()
     };
-    
+
     let wifi_list_model: VecModel<SharedString> = VecModel::from(
-        wifi_list.into_iter().map(SharedString::from).collect::<Vec<SharedString>>()
+        wifi_list
+            .into_iter()
+            .map(SharedString::from)
+            .collect::<Vec<SharedString>>(),
     );
     ModelRc::from(Rc::new(wifi_list_model))
 }
