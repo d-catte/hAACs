@@ -51,8 +51,6 @@ async fn locate_devices() -> Result<Vec<BluetoothDevice>, BluetoothError> {
     for device_info in devices {
         let device = BluetoothDevice {
             name: device_info.name.unwrap_or("Unknown".to_string()),
-            paired: device_info.paired,
-            connected: device_info.connected,
             // TODO Figure out what type it is
             bl_type: BluetoothDeviceType::Audio,
             id: device_info.id,
@@ -78,8 +76,6 @@ async fn connect_device(device_id: &DeviceId) -> Result<(), BluetoothError> {
 /// Bluetooth Device data
 ///
 /// name: The name of the devices
-/// paired: If the device is paired
-/// connected: If the device is connected
 /// id: The device Bluetooth id
 /// alias: The device's nickname
 /// mac_address: The MAC of the device
