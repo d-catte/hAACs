@@ -1,3 +1,5 @@
+import "../fonts/WIFI.ttf";
+
 export global SettingsData {
     in-out property <[string]> bluetooth_devices: ["Speakers"];
     in-out property <[string]> quick_button_options;
@@ -16,4 +18,8 @@ export global SettingsData {
     pure callback refresh_bluetooth();
     pure callback update();
     pure callback refresh_internet();
+    pure callback connect_to_wifi(username: string, password: string);
+    out property <string> font-family-wifi: "WIFI";
+    in-out property <[string]> wifi_names: ["Example"];
+    in-out property <string> current_wifi;
 }

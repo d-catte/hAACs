@@ -1,20 +1,199 @@
 import { BasicScreen } from "basic_screen.slint";
 import { HomeButton } from "widgets/home_button/home_button.slint";
 import { Format } from "data/format.slint";
-import { Slider, ComboBox, Button } from "std-widgets.slint";
+import { Slider, ComboBox, Button, ScrollView } from "std-widgets.slint";
 import { KeyboardCallback, Keyboard } from "callback/keyboard_callbacks.slint";
 import { AACCallback } from "callback/aac_callbacks.slint";
 import { SettingsData } from "data/settings_data.slint";
+
+enum SettingsScreen {
+    Menu,
+    Wifi
+}
+
 export component SettingsMenu inherits BasicScreen {
     property <[string]> offline_voices: ["Ryan"];
+    in-out property <SettingsScreen> current_screen: Menu;
 
+    public function set_screen(screen: SettingsScreen) {
+        if (screen == SettingsScreen.Wifi) {
+            SettingsData.refresh_internet();
+        }
+        self.current_screen = screen;
+    }
+    // Wifi
     HomeButton {
+        visible: current_screen == SettingsScreen.Wifi;
+        clicked => {
+            root.set_screen(SettingsScreen.Menu);
+        }
+    }
+
+    Text {
+        visible: current_screen == SettingsScreen.Wifi;
+        x: 0;
+        y: 10px;
+        width: 100%;
+        height: 75px;
+        text: "Networks";
+        vertical-alignment: center;
+        horizontal-alignment: center;
+        font-size: 24px;
+    }
+
+auth_popup := PopupWindow {
+    property <string> username;
+    property <string> password;
+    height: 150px;
+    width: 300px;
+    x: 362px;
+    y: 225px;
+    close-policy: PopupClosePolicy.no-auto-close;
+
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        border-color: black;
+        border-radius: 8px;
+        border-width: 2px;
+        background: grey;
+        Text {
+            text: "Username: ";
+            x: 5px;
+            y: 5px;
+        }
+        Rectangle {
+            x: 71px;
+            y: 5px;
+            width: 215px;
+            height: 17px;
+            background: darkgray;
+            TextInput {
+                x: 4px;
+                color: black;
+                text <=> username;
+            }
+        }
+        Text {
+            text: "Password: ";
+            x: 5px;
+            y: 50px;
+        }
+        Rectangle {
+            x: 71px;
+            y: 50px;
+            width: 215px;
+            height: 17px;
+            background: darkgray;
+            TextInput {
+                x: 4px;
+                input-type: InputType.password;
+                color: black;
+                text <=> password;
+            }
+        }
+        Button {
+            width: 100px;
+            height: 30px;
+            x: 100px;
+            y: 100px;
+            text: "Join";
+            clicked => {
+                SettingsData.connect_to_wifi(username, password);
+                auth_popup.close();
+            }
+        }
+    }
+}
+
+Rectangle {
+    visible: current_screen == SettingsScreen.Wifi;
+    width: 800px;
+    height: 80%;
+    x: 112px;
+    y: 100px;
+    border-radius: 8px;
+    border-color: black;
+    border-width: 2px;
+
+    ScrollView {
+        width: 100%;
+        height: 100%;
+         VerticalLayout {
+             y: 10px;
+             width: 100%;
+             spacing: 10px;
+
+             for wifi in SettingsData.wifi_names: Rectangle {
+                 x: 25px;
+                 width: 750px;
+                 height: 40px;
+                 border-radius: 8px;
+                 border-color: black;
+                 border-width: 2px;
+
+                 Text {
+                    text: wifi;
+                    x: 10px;
+                 }
+
+                 Button {
+                    text: SettingsData.current_wifi == wifi ? "Disconnect": "Connect";
+                    height: 30px;
+                    width: 100px;
+                    y: 5px;
+                    x: 645px;
+
+                    clicked => {
+                        auth_popup.show();
+                    }
+                 }
+             }
+         }
+    }
+}
+
+
+    // Menu
+    HomeButton {
+        visible: current_screen == SettingsScreen.Menu;
         clicked => {
             root.return_to_main_menu();
         }
     }
 
+    Rectangle {
+        visible: current_screen == SettingsScreen.Menu;
+        height: 50px;
+        width: 50px;
+        x: 5px;
+        y: 5px;
+        z: 5;
+        background: #636363;
+        border-radius: 8px;
+
+        TouchArea {
+            height: 100%;
+            width: 100%;
+
+            Text {
+                font-family: SettingsData.font-family-wifi;
+                text: "B"; // Wifi symbol
+                font-size: 40px;
+                x: 3px;
+                y: 5px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            clicked => {
+                set_screen(SettingsScreen.Wifi);
+            }
+        }
+    }
+
     Text {
+        visible: current_screen == SettingsScreen.Menu;
         x: 0;
         y: 10px;
         width: 100%;
@@ -26,6 +205,7 @@ export component SettingsMenu inherits BasicScreen {
     }
 
     Rectangle {
+        visible: current_screen == SettingsScreen.Menu;
         width: 400px;
         height: 75px;
         x: 20px;
@@ -59,6 +239,7 @@ export component SettingsMenu inherits BasicScreen {
     }
 
     Rectangle {
+        visible: current_screen == SettingsScreen.Menu;
             width: 400px;
             height: 75px;
             x: 20px;
@@ -96,6 +277,7 @@ export component SettingsMenu inherits BasicScreen {
         }
 
         Rectangle {
+            visible: current_screen == SettingsScreen.Menu;
                     width: 400px;
                     height: 75px;
                     x: 20px;
@@ -129,6 +311,7 @@ export component SettingsMenu inherits BasicScreen {
         }
 
    Rectangle {
+       visible: current_screen == SettingsScreen.Menu;
             width: 400px;
             height: 75px;
             x: 20px;
@@ -170,6 +353,7 @@ export component SettingsMenu inherits BasicScreen {
         }
 
     Rectangle {
+        visible: current_screen == SettingsScreen.Menu;
         width: 400px;
         height: 75px;
         x: 20px;
@@ -204,6 +388,7 @@ export component SettingsMenu inherits BasicScreen {
     }
 
     Rectangle {
+        visible: current_screen == SettingsScreen.Menu;
             width: 400px;
             height: 360px;
             x: 604px;
@@ -400,6 +585,7 @@ export component SettingsMenu inherits BasicScreen {
         }
 
     Rectangle {
+        visible: current_screen == SettingsScreen.Menu;
         width: 400px;
         height: 75px;
         x: 604px;

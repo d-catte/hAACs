@@ -2,6 +2,7 @@ mod bluetooth;
 mod speedy_spellers;
 mod tts_impl;
 mod word_model;
+mod wifi;
 
 use crate::bluetooth::BluetoothDevices;
 use crate::speedy_spellers::SpeedySpeller;
@@ -11,6 +12,7 @@ use slint::{ModelRc, SharedString, ToSharedString, VecModel};
 use std::cell::RefCell;
 use std::ops::AddAssign;
 use std::rc::Rc;
+use crate::wifi::scan_wifi;
 
 slint::include_modules!();
 fn main() {
@@ -96,6 +98,13 @@ fn main() {
         let app_clone = app_weak.clone().unwrap();
         move || {
             app_clone.global::<SettingsData>().set_online(check_internet_connection());
+            app_clone.global::<SettingsData>().set_wifi_names(scan_wifi());
+        }
+    });
+    
+    app.global::<SettingsData>().on_connect_to_wifi({
+        move |username, password| {
+            // TODO Connect to WiFi
         }
     });
 
@@ -119,6 +128,8 @@ fn main() {
     app.global::<SettingsData>().set_production_env(false);
 
     app.global::<SettingsData>().set_online(check_internet_connection());
+    
+    app.global::<SettingsData>().set_wifi_names(scan_wifi());
 
     app.global::<AACCallback>().on_cursor_moved({
         let app_clone = app_weak.clone().unwrap();

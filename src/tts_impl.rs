@@ -84,6 +84,7 @@ pub fn tts_speak(text: String, voice: &String, volume: i8) -> Result<(), Box<dyn
     }
     
     // Play file
+    #[cfg(unix)]
     thread::spawn(move || {
         THREAD_LOCK.store(true, std::sync::atomic::Ordering::Relaxed);
         // Play file
