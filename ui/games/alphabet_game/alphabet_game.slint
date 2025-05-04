@@ -90,7 +90,7 @@ export component AlphabetGame inherits BasicScreen {
         width: 150px;
         height: 100px;
         clicked => {
-            game_start();
+            LetterGameData.game_start();
             LetterGameData.game_started = true;
         }
     }
@@ -169,6 +169,4 @@ export component AlphabetGame inherits BasicScreen {
         y: 540px;
         progress: time_remaining;
     }
-
-    pure callback game_start <=> LetterGameData.game_start;
 }

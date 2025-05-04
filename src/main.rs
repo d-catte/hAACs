@@ -44,26 +44,26 @@ fn main() {
     speedy_spellers.register_callbacks();
 
     // Type Character
-    app.on_character_typed({
+    app.global::<KeyboardCallback>().on_character_typed({
         let app_clone = app_weak.clone().unwrap();
         move |character| {
-            let text = app_clone.get_text_value();
-            let index = app_clone.get_cursor_index();
+            let text = app_clone.global::<AACCallback>().get_text();
+            let index = app_clone.global::<AACCallback>().get_cursor_index();
             match character.as_str() {
                 "Delete" => {
                     if text.is_empty() {
                         return;
                     }
-                    app_clone.set_text_value(remove_character_at_index(&text, index as usize));
-                    app_clone.set_cursor_index(index - 1);
+                    app_clone.global::<AACCallback>().set_text(remove_character_at_index(&text, index as usize));
+                    app_clone.global::<AACCallback>().set_cursor_index(index - 1);
                 }
                 "Space" => {
-                    app_clone.set_text_value(insert_character_at_index(&text, index as usize, ' '));
-                    app_clone.set_cursor_index(index + 1);
+                    app_clone.global::<AACCallback>().set_text(insert_character_at_index(&text, index as usize, ' '));
+                    app_clone.global::<AACCallback>().set_cursor_index(index + 1);
                 }
                 _ => {
                     if should_be_capital(&text) {
-                        app_clone.set_text_value(insert_character_at_index(
+                        app_clone.global::<AACCallback>().set_text(insert_character_at_index(
                             &text,
                             index as usize,
                             character.chars().next().unwrap(),
@@ -73,46 +73,46 @@ fn main() {
                         if char >= 'A' || char <= 'Z' {
                             char = char.to_ascii_lowercase();
                         }
-                        app_clone.set_text_value(insert_character_at_index(
+                        app_clone.global::<AACCallback>().set_text(insert_character_at_index(
                             &text,
                             index as usize,
                             char,
                         ));
                     }
-                    app_clone.set_cursor_index(index + 1);
+                    app_clone.global::<AACCallback>().set_cursor_index(index + 1);
                 }
             }
             // Suggest new word
-            app_clone.set_auto_complete(ModelRc::from(
-                text_complete.suggest(get_last_word(&app_clone.get_text_value())),
+            app_clone.global::<KeyboardCallback>().set_auto_complete(ModelRc::from(
+                text_complete.suggest(get_last_word(&app_clone.global::<AACCallback>().get_text())),
             ));
 
-            app_clone.invoke_cursor_moved();
+            app_clone.global::<AACCallback>().invoke_cursor_moved();
         }
     });
 
     // Do Text To Speech
-    app.on_tts({
+    app.global::<AACCallback>().on_tts({
         let selected_voice_clone = Rc::clone(&selected_voice);
         move |text| {
             tts_speak(text.to_string(), &selected_voice_clone.borrow()).unwrap();
         }
     });
 
-    app.set_voices(get_voices(voices));
+    app.global::<AACCallback>().set_voices(get_voices(voices));
 
-    app.on_cursor_moved({
+    app.global::<AACCallback>().on_cursor_moved({
         let app_clone = app_weak.clone().unwrap();
         move || {
-            let text = app_clone.get_text_value();
-            let index = app_clone.get_cursor_index();
+            let text = app_clone.global::<AACCallback>().get_text();
+            let index = app_clone.global::<AACCallback>().get_cursor_index();
 
-            app_clone.set_visible_cursor_text(insert_character_at_index(
+            app_clone.global::<AACCallback>().set_visible_cursor_text(insert_character_at_index(
                 &text,
                 index as usize,
                 '|',
             ));
-            app_clone.set_invisible_cursor_text(insert_character_at_index(
+            app_clone.global::<AACCallback>().set_invisible_cursor_text(insert_character_at_index(
                 &text,
                 index as usize,
                 ' ',
@@ -120,10 +120,10 @@ fn main() {
         }
     });
 
-    app.on_autocomplete({
+    app.global::<KeyboardCallback>().on_autocomplete({
         let app_clone = app_weak.clone().unwrap();
         move |mut string| {
-            let mut text = &mut app_clone.get_text_value();
+            let mut text = &mut app_clone.global::<AACCallback>().get_text();
             let last_word = get_last_word(text);
             let new_length = text.len() - last_word.len();
             let mut binding = SharedString::from(&text.as_str()[..new_length]);
@@ -135,16 +135,16 @@ fn main() {
             text.add_assign(string.as_str());
             text.add_assign(" ");
             let new_index = text.len();
-            app_clone.set_cursor_index(new_index as i32);
-            app_clone.set_text_value(text.clone());
-            app_clone.set_invisible_cursor_text(text.clone());
+            app_clone.global::<AACCallback>().set_cursor_index(new_index as i32);
+            app_clone.global::<AACCallback>().set_text(text.clone());
+            app_clone.global::<AACCallback>().set_invisible_cursor_text(text.clone());
             text.add_assign("|");
-            app_clone.set_visible_cursor_text(text.clone());
-            app_clone.set_auto_complete(ModelRc::default());
+            app_clone.global::<AACCallback>().set_visible_cursor_text(text.clone());
+            app_clone.global::<KeyboardCallback>().set_auto_complete(ModelRc::default());
         }
     });
 
-    app.on_set_voice({
+    app.global::<AACCallback>().on_set_voice({
         let selected_voice_clone = Rc::clone(&selected_voice);
         move |string| {
             let mut selected_voice_borrow = selected_voice_clone.borrow_mut();
@@ -153,7 +153,7 @@ fn main() {
         }
     });
 
-    app.on_set_bluetooth_audio({
+    app.global::<SettingsData>().on_set_bluetooth_audio_device({
         let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
         move |device_str| {
             #[cfg(unix)]
@@ -174,7 +174,7 @@ fn main() {
         }
     });
 
-    app.on_refresh_bluetooth({
+    app.global::<SettingsData>().on_refresh_bluetooth({
         let bluetooth_interface = Rc::clone(&bluetooth_interface);
         let app_clone = app_weak.clone().unwrap();
         move || {
@@ -189,7 +189,7 @@ fn main() {
             }
             let vec_model = VecModel::from(device_names);
             let rc_model = Rc::new(vec_model);
-            app_clone.set_bluetooth_devices(ModelRc::from(rc_model));
+            app_clone.global::<SettingsData>().set_bluetooth_devices(ModelRc::from(rc_model));
         }
     });
 

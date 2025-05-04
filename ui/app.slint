@@ -62,34 +62,8 @@ export component App inherits Window {
             set_screen(Screen.Settings);
         }
     }
+}
 
-    // Callbacks
-    pure callback autocomplete <=> KeyboardCallback.autocomplete;
-    pure callback character_typed <=> KeyboardCallback.character_typed;
-    pure callback tts <=> AACCallback.tts;
-    pure callback cursor_moved <=> AACCallback.cursor_moved;
-    pure callback set_voice <=> AACCallback.set_voice;
-    pure callback set_bluetooth_audio <=> SettingsData.set_bluetooth_audio_device;
-    pure callback refresh_bluetooth <=> SettingsData.refresh_bluetooth;
-
-    // Callback Vars
-    in-out property <[string]> auto_complete <=> KeyboardCallback.auto_complete;
-    in-out property <string> visible_cursor_text <=> AACCallback.visible_cursor_text;
-    in-out property <string> invisible_cursor_text <=> AACCallback.invisible_cursor_text;
-    in-out property <int> cursor_index <=> AACCallback.cursor_index;
-    in-out property <string> text_value <=> AACCallback.text;
-    in-out property <[string]> voices <=> AACCallback.voices;
-    in-out property <[string]> bluetooth_devices <=> SettingsData.bluetooth_devices;
-
-    // Alphabet Game
-    in-out property <[string]> alphabet_chars <=> LetterGameData.chars;
-    in-out property <bool> alphabet_game_started <=> LetterGameData.game_started;
-    in-out property <string> alphabet_current_word <=> LetterGameData.current_word;
-    in-out property <string> alphabet_current_letters <=> LetterGameData.current_letters;
-    in-out property <int> alphabet_difficulty <=> LetterGameData.difficulty;
-    in-out property <string> alphabet_score <=> LetterGameData.score;
-    pure callback alphabet_game_start <=> LetterGameData.game_start;
-    pure callback alphabet_letter_pressed <=> LetterGameData.letter_pressed;
-    pure callback alphabet_match_win <=> LetterGameData.match_win;
-    pure callback alphabet_game_over <=> LetterGameData.game_over;
+export {
+    LetterGameData, KeyboardCallback, AACCallback, SettingsData
 }

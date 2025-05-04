@@ -1,5 +1,5 @@
 use crate::word_model::read_lines_from_file;
-use crate::App;
+use crate::{AACCallback, App, LetterGameData};
 use rand::prelude::SliceRandom;
 use rand::{rng, Rng};
 use slint::{ComponentHandle, Model, ModelRc, SharedString, VecModel};
@@ -29,47 +29,47 @@ impl SpeedySpeller {
         let words_level_2 = Rc::clone(&self.words_level_2);
         let words_level_3 = Rc::clone(&self.words_level_3);
 
-        self.app.on_alphabet_game_start({
+        self.app.global::<LetterGameData>().on_game_start({
             let app_clone = app_weak.clone().unwrap();
 
             move || {
-                app_clone.set_alphabet_score(SharedString::from("-1"));
-                app_clone.invoke_alphabet_match_win();
+                app_clone.global::<LetterGameData>().set_score(SharedString::from("-1"));
+                app_clone.global::<LetterGameData>().invoke_match_win();
             }
         });
 
-        self.app.on_alphabet_letter_pressed({
+        self.app.global::<LetterGameData>().on_letter_pressed({
             let app_clone = app_weak.clone().unwrap();
             move |string| {
-                let mut current_letters = app_clone.get_alphabet_current_letters();
-                let word = app_clone.get_alphabet_current_word();
+                let mut current_letters = app_clone.global::<LetterGameData>().get_current_letters();
+                let word = app_clone.global::<LetterGameData>().get_current_word();
 
                 let new_letters = format!("{}{}", current_letters, string).to_lowercase();
 
                 if word.starts_with(&new_letters) {
                     current_letters.push_str(&string);
-                    app_clone.set_alphabet_current_letters(current_letters);
+                    app_clone.global::<LetterGameData>().set_current_letters(current_letters);
                 }
 
                 println!("{} -> {}", word, new_letters);
 
                 if word.eq(&new_letters) {
-                    app_clone.invoke_alphabet_match_win();
+                    app_clone.global::<LetterGameData>().invoke_match_win();
                 }
             }
         });
 
-        self.app.on_alphabet_match_win({
+        self.app.global::<LetterGameData>().on_match_win({
             let app_clone = app_weak.clone().unwrap();
             move || {
-                let mut score: i8 = app_clone.get_alphabet_score().parse::<i8>().unwrap();
+                let mut score: i8 = app_clone.global::<LetterGameData>().get_score().parse::<i8>().unwrap();
                 score += 1;
-                app_clone.set_alphabet_score(SharedString::from(&score.to_string()));
-                app_clone.set_alphabet_current_letters(SharedString::default());
+                app_clone.global::<LetterGameData>().set_score(SharedString::from(&score.to_string()));
+                app_clone.global::<LetterGameData>().set_current_letters(SharedString::default());
 
                 // Pick next match word
-                app_clone.set_alphabet_chars(scramble(app_clone.get_alphabet_chars()));
-                let diff = app_clone.get_alphabet_difficulty() as u8;
+                app_clone.global::<LetterGameData>().set_chars(scramble(app_clone.global::<LetterGameData>().get_chars()));
+                let diff = app_clone.global::<LetterGameData>().get_difficulty() as u8;
                 println!("{}", diff);
                 let current_words = match diff {
                     1 => Rc::clone(&words_level_1),
@@ -77,15 +77,15 @@ impl SpeedySpeller {
                     _ => Rc::clone(&words_level_3),
                 };
                 let new_word = random_word(Rc::clone(&current_words));
-                app_clone.set_alphabet_current_word(new_word.clone());
-                app_clone.invoke_tts(new_word);
+                app_clone.global::<LetterGameData>().set_current_word(new_word.clone());
+                app_clone.global::<AACCallback>().invoke_tts(new_word);
             }
         });
 
-        self.app.on_alphabet_game_over({
+        self.app.global::<LetterGameData>().on_game_over({
             let app_clone = app_weak.clone().unwrap();
             move || {
-                app_clone.set_alphabet_game_started(false);
+                app_clone.global::<LetterGameData>().set_game_started(false);
             }
         })
     }

@@ -70,9 +70,7 @@ export component TextBox inherits Rectangle {
     public function move_cursor(offset: int) {
         if (offset + cursor_index <= text_value.character-count && offset + cursor_index >= 0) {
             cursor_index += offset;
-            cursor_moved();
+            AACCallback.cursor_moved();
         }
     }
-
-    pure callback cursor_moved <=> AACCallback.cursor_moved;
 }
