@@ -19,14 +19,4 @@ jobs:
       - name: Build
         run: |
             sudo apt install libdbus-1-dev libasound2-dev pkg-config
-            cargo build -r --verbose
-
-      - uses: actions/upload-artifact@v4
-        with:
-    # Name of the artifact to upload.
-    # Optional. Default is 'artifact'
-          name: "haacs"
-
-    # A file, directory or wildcard pattern that describes what to upload
-    # Required.
-          path: "target/release/haacs" 
+            cargo build --verbose
