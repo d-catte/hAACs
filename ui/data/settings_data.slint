@@ -1,5 +1,19 @@
 export global SettingsData {
     in-out property <[string]> bluetooth_devices: ["Speakers"];
+    in-out property <[string]> quick_button_options;
+    in-out property <int> button_1: 0;
+    in-out property <int> button_2: 0;
+    in-out property <int> button_3: 0;
+    in-out property <int> button_4: 0;
+    in-out property <int> button_5: 0;
+    in-out property <int> button_6: 0;
+    in-out property <int> button_7: 0;
+    in-out property <int> button_8: 0;
+    in-out property <int> volume: 50;
+    in-out property <bool> online;
+    in-out property <bool> production_env;
     pure callback set_bluetooth_audio_device(string);
     pure callback refresh_bluetooth();
+    pure callback update();
+    pure callback refresh_internet();
 }

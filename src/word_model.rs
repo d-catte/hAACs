@@ -57,3 +57,14 @@ pub fn read_lines_from_file(file_path: &str) -> Vec<String> {
         .map(|line| line.split_whitespace().collect::<String>())
         .collect()
 }
+
+pub fn read_lines_from_file_keep_spaces(file_path: &str) -> Vec<String> {
+    let path = Path::new(file_path);
+    let file = File::open(path).expect("File not found");
+    let reader = io::BufReader::new(file);
+
+    reader
+        .lines()
+        .map_while(Result::ok)
+        .collect()
+}

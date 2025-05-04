@@ -6,7 +6,7 @@ mod word_model;
 use crate::bluetooth::BluetoothDevices;
 use crate::speedy_spellers::SpeedySpeller;
 use crate::tts_impl::tts_speak;
-use crate::word_model::{read_lines_from_file, TextCompletion};
+use crate::word_model::{read_lines_from_file, read_lines_from_file_keep_spaces, TextCompletion};
 use slint::{ModelRc, SharedString, ToSharedString, VecModel};
 use std::cell::RefCell;
 use std::ops::AddAssign;
@@ -90,16 +90,35 @@ fn main() {
             app_clone.global::<AACCallback>().invoke_cursor_moved();
         }
     });
+    
+    // Recheck internet connection
+    app.global::<SettingsData>().on_refresh_internet({
+        let app_clone = app_weak.clone().unwrap();
+        move || {
+            app_clone.global::<SettingsData>().set_online(check_internet_connection());
+        }
+    });
 
     // Do Text To Speech
     app.global::<AACCallback>().on_tts({
         let selected_voice_clone = Rc::clone(&selected_voice);
+        let app_clone = app_weak.clone().unwrap();
         move |text| {
-            tts_speak(text.to_string(), &selected_voice_clone.borrow()).unwrap();
+            tts_speak(text.to_string(), &selected_voice_clone.borrow(), app_clone.global::<SettingsData>().get_volume() as i8).unwrap();
         }
     });
 
-    app.global::<AACCallback>().set_voices(get_voices(voices));
+    app.global::<AACCallback>().set_voices(vec_to_rc(voices));
+    let quick_button_options = read_lines_from_file_keep_spaces("quick_buttons.txt");
+    let quick_button_options_model: VecModel<SharedString> = VecModel::from(quick_button_options.into_iter().map(SharedString::from).collect::<Vec<SharedString>>());
+    app.global::<SettingsData>().set_quick_button_options(ModelRc::from(Rc::new(quick_button_options_model)));
+
+    #[cfg(unix)]
+    app.global::<SettingsData>().set_production_env(true);
+    #[cfg(not(unix))]
+    app.global::<SettingsData>().set_production_env(false);
+
+    app.global::<SettingsData>().set_online(check_internet_connection());
 
     app.global::<AACCallback>().on_cursor_moved({
         let app_clone = app_weak.clone().unwrap();
@@ -156,6 +175,10 @@ fn main() {
     app.global::<SettingsData>().on_set_bluetooth_audio_device({
         let bluetooth_interface = Rc::clone(&bluetooth_interface); // Clone Rc for this closure
         move |device_str| {
+            if device_str.eq("Speaker") {
+                // TODO Disconnect BT and switch to GPIO output
+                return;
+            }
             #[cfg(unix)]
             for device in bluetooth_interface.borrow().devices.lock().unwrap().iter() {
                 if device.get_device_name().to_shared_string().eq(&device_str) {
@@ -180,7 +203,6 @@ fn main() {
         move || {
             #[cfg(unix)]
             bluetooth_interface.borrow_mut().refresh_bluetooth();
-            // TODO Refresh bluetooth name list
             let mut device_names: Vec<SharedString> = Vec::new();
             device_names.push(SharedString::from("Speakers"));
             #[cfg(unix)]
@@ -238,8 +260,16 @@ fn replace_first_character(text: &SharedString, new_char: char) -> SharedString 
     SharedString::from(string)
 }
 
-fn get_voices(voices: Vec<&str>) -> ModelRc<SharedString> {
+fn vec_to_rc(voices: Vec<&str>) -> ModelRc<SharedString> {
     let shared_voices: Vec<SharedString> = voices.into_iter().map(SharedString::from).collect();
     let vec_model = VecModel::from(shared_voices);
     ModelRc::new(vec_model)
+}
+
+pub fn check_internet_connection() -> bool {
+    // Attempt to connect to Google's public DNS server
+    match std::net::TcpStream::connect("8.8.8.8:53") {
+        Ok(_) => true,  // Connection successful
+        Err(_) => false, // Connection failed
+    }
 }

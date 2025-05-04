@@ -6,6 +6,8 @@ import { KeyboardCallback, Keyboard } from "callback/keyboard_callbacks.slint";
 import { AACCallback } from "callback/aac_callbacks.slint";
 import { SettingsData } from "data/settings_data.slint";
 export component SettingsMenu inherits BasicScreen {
+    property <[string]> offline_voices: ["Ryan"];
+
     HomeButton {
         clicked => {
             root.return_to_main_menu();
@@ -106,7 +108,7 @@ export component SettingsMenu inherits BasicScreen {
                         y: 0px;
                         height: 50px;
                         width: 100%;
-                        text: "AAC Voices";
+                        text: SettingsData.online ? "AAC Voices" : "Offline AAC Voices";
                         horizontal-alignment: center;
                         vertical-alignment: center;
                         font-size: 18px;
@@ -116,10 +118,12 @@ export component SettingsMenu inherits BasicScreen {
                         width: 90%;
                         x: 20px;
                         y: 40px;
-                        model: AACCallback.voices;
-                        current-value: AACCallback.voices[0];
+                        model: SettingsData.online ? AACCallback.voices : offline_voices;
+                        current-value: SettingsData.online ? AACCallback.voices[0] : offline_voices[0];
                         selected(current-value) => {
-                            AACCallback.set_voice(current-value);
+                            if (SettingsData.online) {
+                                AACCallback.set_voice(current-value);
+                            }
                         }
                     }
         }
@@ -143,7 +147,7 @@ export component SettingsMenu inherits BasicScreen {
                 font-size: 18px;
             }
             ComboBox {
-                height: 20px;
+                height: 25px;
                 width: 70%;
                 x: 20px;
                 y: 40px;
@@ -154,7 +158,7 @@ export component SettingsMenu inherits BasicScreen {
                 }
             }
             Button {
-                height: 20px;
+                height: 25px;
                 width: 20%;
                 x: 310px;
                 y: 40px;
@@ -164,4 +168,264 @@ export component SettingsMenu inherits BasicScreen {
                 }
             }
         }
+
+    Rectangle {
+        width: 400px;
+        height: 75px;
+        x: 20px;
+        y: 465px;
+        border-radius: 8px;
+        border-color: black;
+        border-width: 2px;
+        Text {
+            x: 0px;
+            y: 0px;
+            height: 50px;
+            width: 100%;
+            text: "Volume";
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            font-size: 18px;
+        }
+        Slider {
+            height: 20px;
+            width: 90%;
+            x: 20px;
+            y: 40px;
+            value: SettingsData.volume;
+            minimum: 0;
+            maximum: 100;
+            step: 1;
+
+            changed(value) => {
+                SettingsData.volume = value;
+            }
+        }
+    }
+
+    Rectangle {
+            width: 400px;
+            height: 360px;
+            x: 604px;
+            y: 85px;
+            border-radius: 8px;
+            border-color: black;
+            border-width: 2px;
+            Text {
+                x: 0px;
+                y: 0px;
+                height: 50px;
+                width: 100%;
+                text: "Quick Buttons";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+
+            Text {
+                x: 10px;
+                y: 40px;
+                height: 20px;
+                width: 10%;
+                text: "1";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 40px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_1 = self.current-index;
+                }
+            }
+
+            Text {
+                x: 10px;
+                y: 80px;
+                height: 20px;
+                width: 10%;
+                text: "2";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 80px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_2 = self.current-index;
+                }
+            }
+
+            Text {
+                x: 10px;
+                y: 120px;
+                height: 20px;
+                width: 10%;
+                text: "3";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 120px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_3 = self.current-index;
+                }
+            }
+
+            Text {
+                x: 10px;
+                y: 160px;
+                height: 20px;
+                width: 10%;
+                text: "4";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 160px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_4 = self.current-index;
+                }
+            }
+
+            Text {
+                x: 10px;
+                y: 200px;
+                height: 20px;
+                width: 10%;
+                text: "5";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 200px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_5 = self.current-index;
+                }
+            }
+
+            Text {
+                x: 10px;
+                y: 240px;
+                height: 20px;
+                width: 10%;
+                text: "6";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 240px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_6 = self.current-index;
+                }
+            }
+
+            Text {
+                x: 10px;
+                y: 280px;
+                height: 20px;
+                width: 10%;
+                text: "7";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 280px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_7 = self.current-index;
+                }
+            }
+
+            Text {
+                x: 10px;
+                y: 320px;
+                height: 20px;
+                width: 10%;
+                text: "8";
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 18px;
+            }
+            ComboBox {
+                height: 20px;
+                width: 80%;
+                x: 55px;
+                y: 320px;
+                model: SettingsData.quick_button_options;
+                current-value: "Example";
+                selected(current-value) => {
+                    SettingsData.button_8 = self.current-index;
+                }
+            }
+        }
+
+    Rectangle {
+        width: 400px;
+        height: 75px;
+        x: 604px;
+        y: 465px;
+        border-radius: 8px;
+        border-color: black;
+        border-width: 2px;
+        Text {
+            x: 0px;
+            y: 0px;
+            height: 50px;
+            width: 100%;
+            text: SettingsData.online ? "Update From Internet" : "Update From USB";
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            font-size: 18px;
+        }
+        Button {
+            text: "Scan";
+            height: 25px;
+            width: 90%;
+            x: 20px;
+            y: 40px;
+            clicked => {
+                SettingsData.update();
+            }
+        }
+    }
 }
