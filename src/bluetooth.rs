@@ -54,7 +54,7 @@ async fn locate_devices() -> Result<Vec<BluetoothDevice>, BluetoothError> {
             paired: device_info.paired,
             connected: device_info.connected,
             // TODO Figure out what type it is
-            bl_type: BluetoothDeviceType::AUDIO,
+            bl_type: BluetoothDeviceType::Audio,
             id: device_info.id,
             alias: device_info.alias.unwrap_or("None".to_string()),
             mac_address: device_info.mac_address,
@@ -101,7 +101,7 @@ pub struct BluetoothDevice {
 impl BluetoothDevice {
     pub fn connect(&self) {
         self.connect_to_device();
-        if self.bl_type == BluetoothDeviceType::AUDIO {
+        if self.bl_type == BluetoothDeviceType::Audio {
             self.switch_audio_device();
         }
     }
@@ -148,6 +148,7 @@ pub struct BluetoothDevices {
 #[cfg(unix)]
 #[derive(PartialEq, Clone)]
 pub enum BluetoothDeviceType {
-    INPUT,
-    AUDIO,
+    #[allow(dead_code)]
+    Input,
+    Audio,
 }

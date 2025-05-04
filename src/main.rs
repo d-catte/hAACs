@@ -127,6 +127,7 @@ fn main() {
 
     #[cfg(unix)]
     app.global::<SettingsData>().on_connect_to_wifi({
+        #[allow(unused_variables)]
         move |username, password| {
             // TODO Connect to WiFi
         }
