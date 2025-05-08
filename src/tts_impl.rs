@@ -35,12 +35,15 @@ pub fn tts_speak(
 
         let corrected_volume: i8 = if volume == 0 {
             return Ok(());
+        } else if volume == 100 {
+            -1
         } else {
-            volume - 50
+            (100 - volume) * -1
         };
+        let mod_text = "T. " + &text;
         let command = format!(
             "edge-tts -v {} --text \"{}\" --volume={}% --write-media /tmp/output.mp3",
-            voice_final, text, corrected_volume
+            voice_final, mod_text, corrected_volume
         );
 
         //let display = std::env::var("DISPLAY").unwrap_or_else(|_| String::from(":0.0"));
